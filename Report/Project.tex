@@ -165,31 +165,20 @@
 \addtocontents{toc}{\vspace{2em}} % Add a gap in the Contents, for aesthetics
 \mainmatter % Begin numeric (1,2,3...) page numbering
 
-\chapter{Chapter one}
-\label{ch:chapter_one}%
+\chapter{Introduction}
+\label{ch:introduction}%
 % The \label{...}% enables to remove the small indentation that is generated, always leave the % symbol.
 
-In this chapter additional useful information are reported.
+In this chapter will be presented the problem specification and the hypothesis under which the database is implemented.
 
-\section{Sections and subsections}
-\label{sec:section_name}
-Chapters are typically subdivided into sections and subsections, and, optionally,
-subsubsections, paragraphs and subparagraphs.
-All can have a title, but only sections and subsections are numbered.
-A new section is created by the command
-\begin{verbatim}
-\section{Title of the section}
-\end{verbatim}
-The numbering can be turned off by using \verb|\section*{}|.
-\\
-A new subsection is created by the command
-\begin{verbatim}
-\subsection{Title of the subsection}
-\end{verbatim}
-and, similarly, the numbering can be turned off by adding an asterisk as follows 
-\begin{verbatim}
-\subsection*{}
-\end{verbatim}
+\section{Problem Specification}
+\label{sec:prob_specs}
+This project aims to build an Information System that handles scientific articles contained in the DBLP
+bibliography. The project involves managing the type of every article and the associated DOI (Digital Object Identifier),
+which identifies an article or a document and links to it on the web. Other entities to deal with are authors, identified by
+an ID or ORCID (Open Researcher and Contributor ID), and their affiliations with organizations. In order to address the
+problem, we will store data in a graph database, allowing us to visualize relations and handle information correctly.
+
 
 \section{Equations}
 \label{sec:eqs}
