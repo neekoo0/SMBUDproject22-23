@@ -180,47 +180,20 @@ an ID or ORCID (Open Researcher and Contributor ID), and their affiliations with
 problem, we will store data in a graph database, allowing us to visualize relations and handle information correctly.
 
 
-\section{Equations}
-\label{sec:eqs}
-This section gives some examples of writing mathematical equations in your thesis.
+\section{Assumptions}
+\label{sec:assumptions}
+\begin{itemize}
+    \item All the data in the dataset are heterogeneous, so fields are different
+    \item The \textbf{authors} with missing field \emph{\_id} are not considered
+    \item It is possible that an author writes for different organizations
+    \item Field \emph{\_id} in \textbf{author} is unique
+    \item Field \emph{\_id} in \textbf{article} exists and it is unique
+    \item It is impossible that 2 different articles are on the same journal, in the same \emph{volume} with an intersection between \emph{page\_start} and \emph{page\_end}
+    \item The designed model doesn't take into consideration the URL associated to the article node, as the main focus of the project was not reading the article
+    \item It is possible to find a self-reference in a publication
+    \item A \emph{venue} can be instantiated as a journal, a conference or a generic venue!!!!!!!!
+\end{itemize}
 
-Maxwell's equations read:
-\begin{subequations}
-    \label{eq:maxwell}
-    \begin{align}[left=\empheqlbrace]
-    \nabla\cdot \bm{D} & = \rho, \label{eq:maxwell1} \\
-    \nabla \times \bm{E} +  \frac{\partial \bm{B}}{\partial t} & = \bm{0}, \label{eq:maxwell2} \\
-    \nabla\cdot \bm{B} & = 0, \label{eq:maxwell3} \\
-    \nabla \times \bm{H} - \frac{\partial \bm{D}}{\partial t} &= \bm{J}. \label{eq:maxwell4}
-    \end{align}
-\end{subequations}
-
-Equation~\eqref{eq:maxwell} is automatically labeled by \texttt{cleveref},
-as well as Equation~\eqref{eq:maxwell1} and Equation~\eqref{eq:maxwell3}.
-Thanks to the \verb|cleveref| package, there is no need to use \verb|\eqref|.
-Remember that Equations have to be numbered only if they are referenced in the text.
-
-Equations~\eqref{eq:maxwell_multilabels1}, \eqref{eq:maxwell_multilabels2}, \eqref{eq:maxwell_multilabels3}, and \eqref{eq:maxwell_multilabels4} show again Maxwell's equations without brace:
-\begin{align}
-    \nabla\cdot \bm{D} & = \rho, \label{eq:maxwell_multilabels1} \\
-    \nabla \times \bm{E} +  \frac{\partial \bm{B}}{\partial t} &= \bm{0}, \label{eq:maxwell_multilabels2} \\
-    \nabla\cdot \bm{B} & = 0, \label{eq:maxwell_multilabels3} \\
-    \nabla \times \bm{H} - \frac{\partial \bm{D}}{\partial t} &= \bm{J} \label{eq:maxwell_multilabels4}.
-\end{align}
-
-Equation~\eqref{eq:maxwell_singlelabel} is the same as before,
-but with just one label:
-\begin{equation}
-    \label{eq:maxwell_singlelabel}
-    \left\{
-    \begin{aligned}
-    \nabla\cdot \bm{D} & = \rho, \\
-    \nabla \times \bm{E} +  \frac{\partial \bm{B}}{\partial t} &= \bm{0},\\
-    \nabla\cdot \bm{B} & = 0, \\
-    \nabla \times \bm{H} - \frac{\partial \bm{D}}{\partial t} &= \bm{J}.
-    \end{aligned}
-    \right.
-\end{equation}
 
 \section{Figures, Tables and Algorithms}
 Figures, Tables and Algorithms have to contain a Caption that describe their content, and have to be properly reffered in the text.
