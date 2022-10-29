@@ -237,8 +237,77 @@ The ER diagram designed contains the following relationships:
 \end{itemize}
 
 \chapter{Dataset Description}
+In this chapter we will present all the attributes contained in the dataset pointing which of them are considered or not.
+
+\section{Publication}
+Publication represent the central concept of the system. In the dataset, through the profiling, we found over six thousands
+publication node that contains:
+\begin{itemize}
+    \item \textbf{\_id} is an alphanumeric string that is the primary key, that's because is unique and every
+            nodes owns this parameter
+    \item \textbf{title} represents the title of the publication
+    \item \textbf{authors} is an array of authors that will be presented later
+    \item \textbf{venue} defines an entity that will be presented later
+    \item \textbf{year} represents the year of publication
+    \item \textbf{keywords} is an array containing the tag of subjects faced in the publication
+    \item \textbf{fos} is an array containing the fields of study of the publication
+    \item \textbf{n\_citation} is the number of times that this publication has been mentioned
+    \item \textbf{page\_start} defines the starting page of the publication. This attribute wasn't take into consideration
+            because doesn't target the goal of the project
+    \item \textbf{page\_end} defines the last page of the publication. This attribute wasn't take into consideration
+            because doesn't target the goal of the project
+    \item \textbf{lang} represents the language of the publication
+    \item \textbf{volume} is the volume of the publication. This attribute wasn't take into consideration due to the
+            presence of many missing or null values
+    \item \textbf{issue} refers to how many times a periodical has been published during that year. This attribute 
+            wasn't take into consideration due to the presence of many missing or null values
+    \item \textbf{issn} is an identification code of a publication. This attribute wasn't take into consideration due
+            to the presence of many missing or null values
+    \item \textbf{issn} is an identification code of a publication. This attribute wasn't take into consideration due
+            to the presence of many missing or null values
+    \item \textbf{doi} Digital Object Identifier is a persistent identifier. We decided to take it into consideration
+            due to an acceptable missing percentage, much lower than the one affecting issn or isbn attributes
+    \item \textbf{pdf} contains a string that links to the publication PDF online. This attribute wasn't take into
+            consideration due to the presence of many missing or null values
+    \item \textbf{url} contains an array of links to the publication resources online. This attribute wasn't take into
+            consideration because doesn't target the goal of the project
+    \item \textbf{abstract} is a string containing a brief summary of the contents of the paper
+    \item \textbf{references} is an array of ids representing the publication mentioned
+\end{itemize}
+\bigskip
+
+\section{Author}
+Author is the most present entity of the system with over eighteen thousands of nodes.
+\begin{itemize}
+    \item \textbf{\_id} is an alphanumeric string that is the primary key, that's because is unique and almost every nodes
+            owns this parameter
+    \item \textbf{name} is the name of the author
+    \item \textbf{org} is a string that represents the organization in which the author works. It is used as an attribute 
+            of the relationship \emph{Writes} described before
+    \item \textbf{gid} is an identifier of the author. This attribute wasn't take into consideration due to the presence
+            of many missing or null values
+    \item \textbf{orgid} is an identifier that represents the organization in which the author works. It is used as an 
+            attribute of the relationship \emph{Writes} described before
+    \item \textbf{orgs} is an array of organizations for which the author worked. This attribute wasn't take into 
+            consideration due to the presence of many missing or null values
+    \item \textbf{email} is a string containing the email address of the author. This attribute wasn't take into
+            consideration due to the presence of many missing or null values and because doesn't target the goal of the 
+            project
+    \item \textbf{orcid} Open Researcher and Contributor ID is a unique identifier for authors of scientific articles.
+            This attribute is taken into consideration although is not always present
+    \item \textbf{oid} is an identifier for the author. This attribute wasn't take into consideration due to the
+            presence of many missing or null values
+    \item \textbf{bio} is a string that describes the author. This attribute wasn't take into consideration due to 
+            the presence of many missing or null values   
+    \item \textbf{sid} is an identifier for the author. This attribute wasn't take into consideration due to the
+            presence of many missing or null values
+    \item \textbf{org\_zh} is an identifier that represents the organization in which the author works. This attribute
+            wasn't take into consideration due to the presence of many missing or null values
+\end{itemize}
 
 \chapter{Graph Diagram}
+
+\chapter{Sample Dataset}
 
 \chapter{Queries and Commands}
 
