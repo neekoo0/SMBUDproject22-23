@@ -6,7 +6,9 @@ MERGE(venue:GenericVenue{raw:art.venue.raw}) ON CREATE SET
     venue.name = art.venue.name_d
 MERGE(article)-[pub:PUBLISHED]->(venue) ON CREATE SET
 	pub.issue = art.venue.issue,
-        pub.volume = art.venue.volume,
+    pub.volume = art.venue.volume,
 	pub.issn = art.venue.issn,
 	pub.online_issn = art.venue.online_issn,
 	pub.publisher = art.venue.publisher
+
+Added 586 labels, created 586 nodes, set 5122 properties, created 1116 relationships, completed after 8705 ms.
