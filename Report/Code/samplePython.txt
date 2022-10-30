@@ -1,0 +1,5 @@
+sed -n $start","$end"p" $input > tmp.json
+while IFS='' read -r line || [[ -n "$line" ]]; do
+	artId=$(echo "$line" | cut -d '"' -f4)
+	grep "$artId" $input >> $output
+done < tmp.json

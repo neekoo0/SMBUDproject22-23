@@ -1,0 +1,6 @@
+call apoc.load.json("test.json") yield value
+UNWIND value as pub
+UNWIND pub.references as ref
+MATCH (init:Publication{id:pub._id})
+MATCH (final:Publication{id:ref})
+MERGE(init)-[:REFERENCES]->(final)

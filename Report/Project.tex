@@ -49,6 +49,7 @@
 \usepackage{xcolor} % Coloured captions
 \usepackage{amsthm,thmtools,xcolor} % Coloured "Theorem"
 \usepackage{float}
+\usepackage{listings}
 
 % STANDARD MATH PACKAGES
 \usepackage{amsmath}
@@ -80,6 +81,42 @@
 \usepackage{lipsum} % DUMMY PACKAGE
 \usepackage{fancyhdr} % For the headers
 \fancyhf{}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\usepackage{color}
+
+\hypersetup{
+colorlinks=true, %set true if you want colored links
+linktoc=all,     %set to all if you want both sections and subsections linked
+linkcolor=black,  %choose some color if you want links to stand out
+urlcolor=blue,
+}
+
+\lstdefinestyle{mystyle}{
+backgroundcolor=\color{backcolour},
+commentstyle=\color{codegreen},
+keywordstyle=\color{magenta},
+numberstyle=\tiny\color{codegray},
+stringstyle=\color{codepurple},
+basicstyle=\ttfamily\footnotesize,
+breakatwhitespace=false,
+breaklines=true,
+captionpos=b,
+keepspaces=true,
+numbers=left,
+numbersep=5pt,
+showspaces=false,
+showstringspaces=false,
+showtabs=false,
+tabsize=2
+}
+
+\lstset{style=mystyle}
+
 
 % Input of configuration file. Do not change config.tex file unless you really know what you are doing. 
 \input{Configuration_Files/config}
@@ -175,7 +212,7 @@ In this chapter will be presented the problem specification and the hypothesis u
 \label{sec:prob_specs}
 This project aims to build an Information System that handles scientific articles contained in the DBLP
 bibliography. The project involves managing the type of the articles and the associated DOI (Digital Object Identifier),
-which identifies an article or a document and links to it on the web. Other entities to deal with are authors, identified by
+which identifies a publication or a document and links to it on the web. Other entities to deal with are authors, identified by
 an ID or ORCID (Open Researcher and Contributor ID), and their affiliations with organizations. In order to address the
 problem, we will store data in a graph database, allowing us to visualize relations and handle information correctly.
 
@@ -237,11 +274,33 @@ The ER diagram designed contains the following relationships:
 \end{itemize}
 
 \chapter{Dataset Description}
-In this chapter we will present all the attributes contained in the dataset pointing which of them are considered or not.
 
-\section{Publication}
-Publication represent the central concept of the system. In the dataset, through the profiling, we found over six thousands
-publication node that contains:
+\section{Dataset Preprocessing}
+The dataset we used is based on DBLP-Citation-network V13 at \url{https://www.aminer.org/citation} whose size is 13GB. Using
+\textbf{Pandas Profiling} we analyzed the dataset focusing our attention on distinctness and completeness of the attributes.
+We used this result for selecting primary keys (attributes with high values of distinctness and low missing values), to ignore
+fields that were not informative, and also to filter the tuples. Then we sliced the entire dataset obtaining a subset of 16MB.
+The slicing operation was not performed randomly in order not to obtain a subset of the dataset containing some publications but any
+of the publications referenced by them. The working sample of ~6400 publications was obtained in this way:
+\begin{itemize}
+    \item first a partition of 20M rows was extracted from the original database so that we started from a pool of 257K articles
+        instead of using all the original database of ~5.4M articles, we used 5\% as a sample to speed up the sample generation
+        process
+    \item then an extract of 4K publications was used as a base, we arbitrarily picked the ones from position 20000 to 24000
+    \item in the end the ids of those 4K publications were looked up inside our partition to obtain also articles that cited
+        them, in order to have sufficient relationships to make different queries
+\end{itemize}
+The following is a part of the script used for the operation just described:
+\lstinputlisting[language=Python]{Code/samplePython.txt}
+\bigskip
+In the end, we have to say that we didn't add extra data to our slice of the dataset in order to maintain the coherency of the
+information.
+
+\section{Attributes Description}
+In this section we will present all the attributes contained, pointing which of them are considered or not.
+
+\subsection{Publication}
+Publication represent the central concept of the system and contains:
 \begin{itemize}
     \item \textbf{\_id} is an alphanumeric string that is the primary key, that's because is unique and every
             nodes owns this parameter
@@ -257,13 +316,13 @@ publication node that contains:
     \item \textbf{page\_end} defines the last page of the publication. This attribute wasn't take into consideration
             because doesn't target the goal of the project
     \item \textbf{lang} represents the language of the publication
-    \item \textbf{volume} is the volume of the publication. This attribute wasn't take into consideration due to the
-            presence of many missing or null values
+    \item \textbf{volume} is the volume of the publication. This attribute is used in the relationship between \emph{Article}
+            and \emph{Venue}
     \item \textbf{issue} refers to how many times a periodical has been published during that year. This attribute 
             wasn't take into consideration due to the presence of many missing or null values
-    \item \textbf{issn} is an identification code of a publication. This attribute wasn't take into consideration due
+    \item \textbf{issn} is an identification code of the publication. This attribute wasn't take into consideration due
             to the presence of many missing or null values
-    \item \textbf{issn} is an identification code of a publication. This attribute wasn't take into consideration due
+    \item \textbf{isbn} is an identification code of the publication. This attribute wasn't take into consideration due
             to the presence of many missing or null values
     \item \textbf{doi} Digital Object Identifier is a persistent identifier. We decided to take it into consideration
             due to an acceptable missing percentage, much lower than the one affecting issn or isbn attributes
@@ -276,16 +335,16 @@ publication node that contains:
 \end{itemize}
 \bigskip
 
-\section{Author}
-Author is the most present entity of the system with over eighteen thousands of nodes.
+\subsection{Author}
+Author is the most present entity of the system and contains:
 \begin{itemize}
     \item \textbf{\_id} is an alphanumeric string that is the primary key, that's because is unique and almost every nodes
             owns this parameter
     \item \textbf{name} is the name of the author
     \item \textbf{org} is a string that represents the organization in which the author works. It is used as an attribute 
             of the relationship \emph{Writes} described before
-    \item \textbf{gid} is an identifier of the author. This attribute wasn't take into consideration due to the presence
-            of many missing or null values
+    \item \textbf{gid} is an identifier that represents the organization in which the author works. This attribute wasn't
+            take into consideration due to the presence of many missing or null values
     \item \textbf{orgid} is an identifier that represents the organization in which the author works. It is used as an 
             attribute of the relationship \emph{Writes} described before
     \item \textbf{orgs} is an array of organizations for which the author worked. This attribute wasn't take into 
@@ -301,13 +360,56 @@ Author is the most present entity of the system with over eighteen thousands of 
             the presence of many missing or null values   
     \item \textbf{sid} is an identifier for the author. This attribute wasn't take into consideration due to the
             presence of many missing or null values
+    \item \textbf{name\_zh} is the name of the organization in which the author works. This attribute wasn't take
+            into consideration due to the presence of many missing or null values
     \item \textbf{org\_zh} is an identifier that represents the organization in which the author works. This attribute
             wasn't take into consideration due to the presence of many missing or null values
+\end{itemize}
+\bigskip
+
+\subsection{Venue}
+Venue is the entity that represents the type of a publication. Thanks to the profiling, we found that venue nodes contains
+the following attributes:
+\begin{itemize}
+    \item \textbf{\_id} is an alphanumeric identifier. This attribute is not used as a primary key due to the large amount
+            of missing values
+    \item \textbf{raw} is the name or the abbreviation of the event or volume (without specifying the year) in which the
+            publication was presented. This attribute was chosen as the primary key thanks to the low number of missing
+            values and to the fact that in this way publications were grouped based on the event in which they were presented
+    \item \textbf{raw\_zh} refers to the event (without specifying the year) in which the publication was presented. 
+            This attribute wasn't take into consideration due to the presence of many missing or null values
+    \item \textbf{type} indicates the type of the publication. Exploiting the profiling we understood the distribution
+            of different values of \emph{type}, and become clear that 0 and 1 were attributable respectively to conference
+            and journal. The other values were not easily attributable to other types of publication, so we decided to consider
+            as a generic venue:
+            \begin{itemize}
+                \item every \emph{type} values different from 0 or 1
+                \item every entity in which the \emph{type} field is missing
+            \end{itemize} 
+    \item \textbf{sid} name of the journal in which the publication was published. This attribute wasn't take into
+            consideration due to the presence of many missing or null values
+    \item \textbf{t} represents the type of the publication. This attribute wasn't take into consideration due to the
+            presence of many missing or null values
+    \item \textbf{issn} is an identification code of the publication
+    \item \textbf{name\_d} is the extended name of the event or volume (without specifying the year) in which the
+            publication was presented
+    \item \textbf{publisher} is a string containing the name of the publisher
+    \item \textbf{online\_issn} is an identification code of the publication
 \end{itemize}
 
 \chapter{Graph Diagram}
 
 \chapter{Sample Dataset}
+In this chapter we will present the import commands. In order to complete them we used the plug-in apoc.
+
+\begin{enumerate}
+    \item Create \emph{Publication}, \emph{Author} and \verb |WRITES| relationship between them: \lstinputlisting[language=SQL]{Code/import/imp1.txt}
+    \item Create \verb |REFERENCE| relationship between \emph{Articles}: \lstinputlisting[language=SQL]{Code/import/imp2.txt}
+    \item Create \emph{Conference} when \verb |raw| exists and \verb |type| equal to 0: \lstinputlisting[language=SQL]{Code/import/imp3.txt}
+    \item Create \emph{Journal} when \verb |raw| exists and \verb |type| equal to 1: \lstinputlisting[language=SQL]{Code/import/imp4.txt}
+    \item Create \emph{Generic Venue} when \verb |raw| doesn't exist or \verb |type| different from 0 or 1: \lstinputlisting[language=SQL]{Code/import/imp5.txt}
+    \item Create \emph{Field of Study} and \verb |REGARD| relationship between \emph{Field of Study} and \emph{Publication}: \lstinputlisting[language=SQL]{Code/import/imp1.txt}
+\end{enumerate}
 
 \chapter{Queries and Commands}
 

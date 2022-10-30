@@ -1,0 +1,17 @@
+call apoc.load.json("test.json") yield value
+UNWIND value as pub
+UNWIND pub.authors as aut WITH aut,pub where aut._id is not null
+MERGE (publication:Publication{id:pub._id}) ON CREATE SET
+    publication.title  = pub.title, 
+    publication.doi = pub.doi, 
+    publication.year = pub.year, 
+    publication.n_citation = pub.n_citation,  
+    publication.keywords = pub.keywords,
+    publication.abstract = pub.abstract,
+    publication.lang = pub.lang
+MERGE(author:Author{id:aut._id}) ON CREATE SET
+    author.name = aut.name,
+    author.orcid = aut.orcid
+MERGE(author)-[writes:WRITES]->(publication) ON CREATE SET
+    writes.org=aut.org,
+    writes.orgid=aut.orgid
