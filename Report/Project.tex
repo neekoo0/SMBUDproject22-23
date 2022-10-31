@@ -400,7 +400,16 @@ the following attributes:
 \chapter{Graph Diagram}
 
 \chapter{Sample Dataset}
-In this chapter we will present the import commands. In order to complete them we used the plug-in apoc.
+In this chapter we will present the import commands that generates 39550 nodes distributed as follows:
+\begin{itemize}
+    \item 6340 \emph{Publication} nodes
+    \item 17025 \emph{Author} nodes
+    \item 2133 \emph{Conference} nodes
+    \item 256 \emph{Journal} nodes
+    \item 506 \emph{Generic Value} nodes
+    \item 13210 \emph{Field of Study} nodes
+\end{itemize}
+In order to complete these operations we used the plug-in apoc.
 
 \begin{enumerate}
     \item Create \emph{Publication}, \emph{Author} and \verb |WRITES| relationship between them: \lstinputlisting[language=SQL]{Code/import/imp1.txt}
@@ -453,6 +462,11 @@ It's an update command that increments the number of citations of the matched \e
 
 
 \chapter{Conclusion}
+Some interesting conclusions can be drawn from the development of this project: designing a Graph DB allows us to open a new
+perspective in database creation. This technology enables an efficient visualization of the design choices and it is more
+flexible than classical relational databases. \newline
+Another very useful aspect of this project were the dataset pre-processing operation and the profiling that allows us to deal
+with a real world problem of managing data.
 
 %-------------------------------------------------------------------------
 %	APPENDICES
