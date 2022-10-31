@@ -1,0 +1,3 @@
+MERGE (fos1:Fos{name:"Computer Science"}) 
+MERGE (fos2:Fos{name:"Stream Reasoning"})
+MERGE (fos3:Fos{name:"Big Data"})

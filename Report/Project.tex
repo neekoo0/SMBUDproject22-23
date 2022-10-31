@@ -404,14 +404,53 @@ In this chapter we will present the import commands. In order to complete them w
 
 \begin{enumerate}
     \item Create \emph{Publication}, \emph{Author} and \verb |WRITES| relationship between them: \lstinputlisting[language=SQL]{Code/import/imp1.txt}
+        Added 23365 labels, created 23365 nodes, set 138863 properties, created 18534 relationships, completed after 104197 ms.
     \item Create \verb |REFERENCE| relationship between \emph{Articles}: \lstinputlisting[language=SQL]{Code/import/imp2.txt}
+        Created 2866 relationships, completed after 466136 ms.
     \item Create \emph{Conference} when \verb |raw| exists and \verb |type| equal to 0: \lstinputlisting[language=SQL]{Code/import/imp3.txt}
+        Added 2133 labels, created 2133 nodes, set 22676 properties, created 4846 relationships, completed after 22029 ms.
     \item Create \emph{Journal} when \verb |raw| exists and \verb |type| equal to 1: \lstinputlisting[language=SQL]{Code/import/imp4.txt}
+        Added 256 labels, created 256 nodes, set 1681 properties, created 351 relationships, completed after 6576 ms.
     \item Create \emph{Generic Venue} when \verb |raw| doesn't exist or \verb |type| different from 0 or 1: \lstinputlisting[language=SQL]{Code/import/imp5.txt}
-    \item Create \emph{Field of Study} and \verb |REGARD| relationship between \emph{Field of Study} and \emph{Publication}: \lstinputlisting[language=SQL]{Code/import/imp1.txt}
+        Added 586 labels, created 586 nodes, set 5122 properties, created 1116 relationships, completed after 8705 ms.
+    \item Create \emph{Field of Study} and \verb |REGARD| relationship between \emph{Field of Study} and \emph{Publication}: \lstinputlisting[language=SQL]{Code/import/imp6.txt}
+        Added 13210 labels, created 13210 nodes, set 13210 properties, created 59740 relationships, completed after 371223 ms.
 \end{enumerate}
 
-\chapter{Queries and Commands}
+
+\chapter{Commands and Queries}
+\section{Commands}
+We have identified the following \verb |INSERT| and \verb |UPDATE| commands in order to show the system basic functionalities.
+
+\subsection{Insert two authors in the system}
+Assuming they are not present in the dataset, we simply used the \verb |CREATE| to create those instances.
+\lstinputlisting[language=SQL]{Code/commands/cmd1.txt}
+
+\subsection{Insert Journal Venue where the paper has been published}
+Assuming they are not present in the dataset, we simply used the \verb |CREATE| to create an instance of \emph{Venue (Journal)}
+specifying where it was published.
+\lstinputlisting[language=SQL]{Code/commands/cmd2.txt}
+
+\subsection{Create (if do not exist) publication's fields of study}
+We simply used the \verb |MERGE| to create three instances of \emph{Field Of Study}
+\lstinputlisting[language=SQL]{Code/commands/cmd3.txt}
+
+\subsection{Create a publication and his relationships with already existing entities}
+At the beginning we \verb |MATCH| two specific \emph{Authors}, three specific \emph{Fields of Study} and one specific
+\emph{Journal}. Then, we create the \emph{Publication} and the relationships with the entities listed before
+\lstinputlisting[language=SQL]{Code/commands/cmd4.txt}
+
+\subsection{Match the publications referenced by the article created before}
+We \verb |MATCH| the two publications referred by our article and we create \verb |REFERENCES| relationships that link
+the publications already present in the dataset with the article just created
+\lstinputlisting[language=SQL]{Code/commands/cmd5.txt}
+
+\subsection{Increment publication's n\_citation attribute by 1}
+It's an update command that increments the number of citations of the matched \emph{Publication}
+\lstinputlisting[language=SQL]{Code/commands/cmd6.txt}
+
+\section{Queries}
+
 
 \chapter{Conclusion}
 

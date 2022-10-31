@@ -10,5 +10,3 @@ MERGE(article)-[pub:PUBLISHED]->(venue) ON CREATE SET
 	pub.issn = art.venue.issn,
 	pub.online_issn = art.venue.online_issn,
 	pub.publisher = art.venue.publisher
-
-Added 256 labels, created 256 nodes, set 1681 properties, created 351 relationships, completed after 6576 ms.

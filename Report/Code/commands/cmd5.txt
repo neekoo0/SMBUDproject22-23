@@ -1,0 +1,3 @@
+MATCH (pub1:Pubblication),(pub2:Pubblication)
+WHERE pub1.id = "53e99fe4b7602d97028bf743" and pub2.id="53e99fddb7602d97028bc085"								  
+CREATE (pub)-[:REFERENCES]->(pub1), (pub)-[:REFERENCES]->(pub2)

@@ -4,5 +4,3 @@ UNWIND pub.references as ref
 MATCH (init:Publication{id:pub._id})
 MATCH (final:Publication{id:ref})
 MERGE(init)-[:REFERENCES]->(final)
-
-Created 2866 relationships, completed after 466136 ms.

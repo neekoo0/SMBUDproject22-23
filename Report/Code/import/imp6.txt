@@ -4,5 +4,3 @@ UNWIND pub.fos as f
 MATCH(publication:Publication{id:pub._id})
 MERGE(fos:Fos{name:f})
 MERGE (publication)-[:REGARDS]->(fos)
-
-Added 13210 labels, created 13210 nodes, set 13210 properties, created 59740 relationships, completed after 371223 ms.

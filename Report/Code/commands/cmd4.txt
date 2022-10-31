@@ -1,0 +1,29 @@
+MATCH (author1:Author),(author2:Author) WHERE author1.id = "54857748dabfae8a11fb2a1e" and author2.id = "53f487fbdabfaee4dc8b1e68"
+MATCH (fos1:Fos),(fos2:Fos),(fos3:Fos) WHERE fos1.name="Computer Science" and fos2.name="Stream Reasoning" and fos3.name="Big Data"
+MATCH (journal:Journal) WHERE journal.raw = "ESA"
+CREATE (pub:Publication{id: "53e99f86b7612d9702859fdf",
+						 doi: "10.1016/j.eswa.2022.116630",
+						 title: "An extensive study of C-SMOTE, a Continuous Synthetic Minority Oversampling Technique for Evolving Data Streams",
+						 year: 2022,
+						 n_citation: 3,
+						 keywords: ["Evolving Data Stream","Streaming","Concept drift","Balancing"],
+						 abstract: "Streaming Machine Learning (SML) studies algorithms that update their models, given an unbounded and often non-stationary flow of data performing a single pass.",
+						 lang: "en"})
+
+//Creation of relationship WRITES between authors and the article						 
+CREATE (author1)-[:WRITES{org: "Politecnico di Milano",
+								orgid: "5b86c975e1cd8e14a3d351a3"}]->(pub),
+	   (author2)-[:WRITES{org: "Politecnico di Milano",
+								orgid: "5b86c975e1cd8e14a3d351a3"}]->(pub)
+									
+//Creation of relationship REGARDS between article and fields of study							
+CREATE (pub)-[:REGARDS]->(fos1),
+	   (pub)-[:REGARDS]->(fos2),
+       (pub)-[:REGARDS]->(fos3)
+	  					 
+//Creation of relationship PUBLISHED between the article and the journal
+//Note that in this case fields online_issn and issue are not available
+CREATE (pub)-[published:PUBLISHED{volume:"196",
+								  issn: "0957-4174",
+								  publisher:"Elsevier"}]->(journal)
+								  

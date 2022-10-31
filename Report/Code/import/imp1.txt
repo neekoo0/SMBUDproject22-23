@@ -15,5 +15,3 @@ MERGE(author:Author{id:aut._id}) ON CREATE SET
 MERGE(author)-[writes:WRITES]->(publication) ON CREATE SET
     writes.org=aut.org,
     writes.orgid=aut.orgid
-
-Added 23365 labels, created 23365 nodes, set 138863 properties, created 18534 relationships, completed after 104197 ms.
