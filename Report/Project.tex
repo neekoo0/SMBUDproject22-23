@@ -304,6 +304,17 @@ The ER diagram designed contains the following relationships:
     \item \textbf{Published on:} simply relates a \emph{publication} to its \emph{venue}
 \end{itemize}
 
+\section{Important differences between ER and the implementation}
+\begin{itemize}
+    \item as it will be explained in the section 3.2.3 in the implementation we decided to distinguish between different venue
+            nodes using the \emph{raw} property. In such way we needed to move some venue attributes (volume, issue, publisher, ISSN)
+            to the relationship \emph{Published}. This has been done due low data quality of the dataset with respect to the venue entity.
+    \item the publication hierarchy has not been implemented because the dataset used doesn't distinguish between different types of
+            publications. We decided to represent the conceptual ER in this way taking inspiration from the DBLP.org site description
+    \item some attributes that have been included in the ER are missing in the implementation because either unnecessary from queries
+            point of view or due to the dataset missing those properties (i.e. \emph{nationality} in \emph{Author})
+\end{itemize}
+
 \chapter{Dataset Description}
 
 \section{Dataset Preprocessing}
@@ -402,11 +413,12 @@ Author is the most present entity of the system and contains:
 Venue is the entity that represents the type of a publication. Thanks to the profiling, we found that venue nodes contains
 the following attributes:
 \begin{itemize}
-    \item \textbf{\_id} is an alphanumeric identifier. This attribute is not used as a primary key due to the large amount
-            of missing values
-    \item \textbf{raw} is the name or the abbreviation of the event or volume (without specifying the year) in which the
-            publication was presented. This attribute was chosen as the primary key thanks to the low number of missing
-            values and to the fact that in this way publications were grouped based on the event in which they were presented
+    \item \textbf{\_id} is an alphanumeric identifier. We didn't use this property for the merge operation due to the large
+            amount of missing values
+    \item \textbf{raw} is the name or the abbreviation of the venue (without specifying the year, issue or volume) in which the
+            publication was presented. This property was used during the merge operation thanks to the low number of missing
+            values and to the fact that in this way publications were grouped based on the name or the abbreviation
+            of the venue in which they were presented
     \item \textbf{raw\_zh} refers to the event (without specifying the year) in which the publication was presented. 
             This attribute wasn't take into consideration due to the presence of many missing or null values
     \item \textbf{type} indicates the type of the publication. Exploiting the profiling we understood the distribution
@@ -647,7 +659,7 @@ SET article.n_citation = article.n_citation + 1
 \section{Queries}
 We have identified the following queries in order to show the system basic functionalities.
 
-\subsection{Query 1 - 3 nodes, conditions, aggregations, limits }
+\subsection{Query 1}
 This query return all the venues where have been published the articles of the author that has written the max number of articles\\
 \textbf{Description:} for each author we count how many articles he wrote, then order by the count of written articles by descending order and keep only the top 1 author.
 Then we match all the articles written by this author and then we return the raw of the venue where these articles were published on
@@ -658,7 +670,7 @@ ORDER BY articleWritten DESC
 WITH author AS authorMax, articleWritten LIMIT 1
 MATCH(authorMax:Author)-[:WRITES]->(article)
 MATCH(article:Publication)-[:PUBLISHED]->(venue)
-RETURN venue.raw
+RETURN DISTINCT venue.raw
 \end{lstlisting}
 \begin{figure}[H]
 \centering
@@ -667,7 +679,7 @@ RETURN venue.raw
 \label{fig:query1}
 \end{figure}
 
-\subsection{Query 2 - 4 (+1) nodes, conditions, aggregations, limits }
+\subsection{Query 2}
 Starting from the author found in query 1 we want to find the article with the max number of co-author and return the venue and fields of study\\
 \textbf{Description:} we match a specific author given its id, then we match all his articles and then all the co-authors of his articles.
 Then, for each article we count the number of co-authors and order them by descending order wrt the number of co-authors.
@@ -689,7 +701,7 @@ RETURN venues.raw AS Venue, collect(fos.name) AS FieldsOfStudy
 \label{fig:query2}
 \end{figure}
 
-\subsection{Query 3 - 3 nodes, conditions}
+\subsection{Query 3}
 This query finds all authors that have worked together more than once (on the same field of study)\\
 \textbf{Description:} we match 2 different authors and 2 different articles in which they collaborated,
 matching also all their fields of study, then we filter by keeping only those who have at least one field of study in common.
@@ -714,7 +726,7 @@ RETURN DISTINCT aut2.name, aut1.name
 \label{fig:query3}
 \end{figure}
 
-\subsection{Query 4 - Function (minimum path)}
+\subsection{Query 4}
 Find shortest path of WRITES links between an author that wrote a publication for a Stanford University and another author
 that wrote and article for a California University.\\
 \textbf{Description:} we match 2 authors such that one has published at least once in affiliation with Stanford university and the other with California university.
@@ -741,7 +753,7 @@ RETURN p, auth1.name, auth2.name
 \label{fig:query4}
 \end{figure}
 
-\subsection{Query 5 - 3 nodes, conditions, aggregations, limits}
+\subsection{Query 5}
 Find the venue with the highest average number of citations of its publications starting from year 1990 and return the most frequent field of study of its publications.\\
 \textbf{Description:} we match all the publications that have the year attribute > 1990, then we group with respect to the venue they've been published.
 Then for each venue we compute the average of the number of citations of the articles that were published on it.
@@ -887,8 +899,8 @@ number of different affiliations.
 \textbf{Note:} this query complexity is of 2 nodes, but we decided to present it because of the importance of the results.
 \begin{lstlisting}[language=cypher, label=lst:cypher-example]
 CALL{
-MATCH(article:Publication)<-[w:WRITES]-(author:Author)
-RETURN DISTINCT article, w.org as org
+    MATCH(article:Publication)<-[w:WRITES]-(author:Author)
+    RETURN DISTINCT article, w.org as org
 }
 WITH  article, count(*) as n
 ORDER BY n DESC LIMIT 1

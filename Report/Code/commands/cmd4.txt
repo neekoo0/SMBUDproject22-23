@@ -1,5 +1,5 @@
-MATCH (author1:Author),(author2:Author) WHERE author1.id = "54857748dabfae8a11fb2a1e" and author2.id = "53f487fbdabfaee4dc8b1e68"
-MATCH (fos1:Fos),(fos2:Fos),(fos3:Fos) WHERE fos1.name="Computer Science" and fos2.name="Stream Reasoning" and fos3.name="Big Data"
+MATCH (author1:Author),(author2:Author) WHERE author1.id = "54857748dabfae8a11fb2a1e" AND author2.id = "53f487fbdabfaee4dc8b1e68"
+MATCH (fos1:Fos),(fos2:Fos),(fos3:Fos) WHERE fos1.name="Computer Science" AND fos2.name="Stream Reasoning" AND fos3.name="Big Data"
 MATCH (journal:Journal) WHERE journal.raw = "ESA"
 CREATE (pub:Publication{id: "53e99f86b7612d9702859fdf",
 						 doi: "10.1016/j.eswa.2022.116630",

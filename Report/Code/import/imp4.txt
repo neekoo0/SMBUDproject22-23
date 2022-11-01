@@ -1,6 +1,6 @@
 call apoc.load.json("test.json") yield value
-UNWIND value as art
-WITH art where art.venue.raw is not null and art.venue.type = 1
+UNWIND value AS art
+WITH art WHERE art.venue.raw IS NOT NULL AND art.venue.type = 1
 MATCH(article:Publication{id:art._id})
 MERGE(venue:Journal{raw:art.venue.raw}) ON CREATE SET
     venue.name = art.venue.name_d
