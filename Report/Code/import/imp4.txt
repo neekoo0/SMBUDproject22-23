@@ -5,8 +5,8 @@ MATCH(article:Publication{id:art._id})
 MERGE(venue:Journal{raw:art.venue.raw}) ON CREATE SET
     venue.name = art.venue.name_d
 MERGE(article)-[pub:PUBLISHED]->(venue) ON CREATE SET
-	pub.issue = art.venue.issue,
-    pub.volume = art.venue.volume,
-	pub.issn = art.venue.issn,
+	pub.issue = art.issue,
+    pub.volume = art.volume,
+	pub.issn = art.issn,
 	pub.online_issn = art.venue.online_issn,
 	pub.publisher = art.venue.publisher

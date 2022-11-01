@@ -85,8 +85,6 @@
 % Input of configuration file. Do not change config.tex file unless you really know what you are doing. 
 \input{Configuration_Files/config}
 
-\documentclass{article}
-
 \usepackage{ifxetex}
 \usepackage{ifluatex}
 \newif\ifxetexorluatex % a new conditional starts as false
@@ -431,6 +429,32 @@ the following attributes:
 \end{itemize}
 
 \chapter{Graph Diagram}
+The designed graph diagram presented below, represents the following nodes:
+\begin{itemize}
+    \item \textbf{Publication} has two nodes in the diagram and they represent the central concept of the system. They are
+        linked to the following entities: \emph{Author}, \emph{Field of Study}, \emph{Venue} or to another \emph{Publication}
+    \item \textbf{Author} has two nodes in the diagram and they represent the authors of at least one scientific article.
+        They are linked to the following entity \emph{Publication}
+    \item \textbf{Venue} has two nodes in the diagram, one instantiated as a \emph{Journal} and the other one as a 
+        \emph{Conference}. They are linked to the following entity \emph{Publication}
+    \item \textbf{Field of Study} has two nodes in the diagram and they represent the topics of the \emph{Publications}. 
+        They are linked to the following entity \emph{Publication}
+\end{itemize}
+\bigskip
+The diagram also represents the following links:
+\begin{itemize}
+    \item \textbf{Writes} links \emph{Authors} with their \emph{Publications}
+    \item \textbf{Publishes} links \emph{Publications} with the \emph{Venues} in which it was published
+    \item \textbf{Regards} links \emph{Publications} with the covered \emph{Fields of Study}
+    \item \textbf{Mentions} links a \emph{Publication} with another one cited
+\end{itemize}
+\bigskip
+In the following diagram we decided to instantiate two \emph{Authors}, two \emph{Publications}, two \emph{Fields of Study} and
+two \emph{Venues} (one \emph{Journal} and one \emph{Conference}) in order to efficiently describe the system functionalities. \newline
+In this case \emph{Author1} wrote both the \emph{Publications}, while the other one wrote only \emph{Publication2}.
+Both the \emph{Publications} covered the same \emph{Fields of Study} but \emph{Publication1} was published in a conference,
+while the other one was published in a journal. At the end we have to say that exists a relationship \emph{Mentions} that
+links \emph{Publication1} with \emph{Publication2}.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.6\textwidth]{graphDiagram.png}
@@ -491,9 +515,9 @@ MATCH(article:Publication{id: art._id})
 MERGE(venue:Conference{raw:art.venue.raw}) ON CREATE SET
     venue.name = art.venue.name_d
 MERGE(article)-[pub:PUBLISHED]->(venue) ON CREATE SET
-    pub.issue = art.venue.issue,
-    pub.volume = art.venue.volume,
-    pub.issn = art.venue.issn,
+    pub.issue = art.issue,
+    pub.volume = art.volume,
+    pub.issn = art.issn,
     pub.online_issn = art.venue.online_issn,
     pub.publisher = art.venue.publisher
         \end{lstlisting}
@@ -507,9 +531,9 @@ MATCH(article:Publication{id:art._id})
 MERGE(venue:Journal{raw:art.venue.raw}) ON CREATE SET
     venue.name = art.venue.name_d
 MERGE(article)-[pub:PUBLISHED]->(venue) ON CREATE SET
-    pub.issue = art.venue.issue,
-    pub.volume = art.venue.volume,
-    pub.issn = art.venue.issn,
+    pub.issue = art.issue,
+    pub.volume = art.volume,
+    pub.issn = art.issn,
     pub.online_issn = art.venue.online_issn,
     pub.publisher = art.venue.publisher
         \end{lstlisting}
@@ -523,9 +547,9 @@ MATCH(article:Publication{id:art._id})
 MERGE(venue:GenericVenue{raw:art.venue.raw}) ON CREATE SET
     venue.name = art.venue.name_d
 MERGE(article)-[pub:PUBLISHED]->(venue) ON CREATE SET
-    pub.issue = art.venue.issue,
-    pub.volume = art.venue.volume,
-    pub.issn = art.venue.issn,
+    pub.issue = art.issue,
+    pub.volume = art.volume,
+    pub.issn = art.issn,
     pub.online_issn = art.venue.online_issn,
     pub.publisher = art.venue.publisher
         \end{lstlisting}
@@ -636,6 +660,12 @@ MATCH(authorMax:Author)-[:WRITES]->(article)
 MATCH(article:Publication)-[:PUBLISHED]->(venue)
 RETURN venue.raw
 \end{lstlisting}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{query/query1.PNG}
+\caption{Results: 6 records after 1 ms and completed after 44 ms}
+\label{fig:query1}
+\end{figure}
 
 \subsection{Query 2 - 4 (+1) nodes, conditions, aggregations, limits }
 Starting from the author found in query 1 we want to find the article with the max number of co-author and return the venue and fields of study\\
@@ -652,6 +682,12 @@ MATCH(article)-[:PUBLISHED]->(venues)
 MATCH(article)-[:REGARDS]->(fos)
 RETURN venues.raw AS Venue, collect(fos.name) AS FieldsOfStudy
 \end{lstlisting}
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{query/query2.PNG}
+\caption{Results: 1 records after 1 ms and completed after 24 ms}
+\label{fig:query2}
+\end{figure}
 
 \subsection{Query 3 - 3 nodes, conditions}
 This query finds all authors that have worked together more than once (on the same field of study)\\
@@ -671,13 +707,19 @@ WHERE (art1)<-[:WRITES]-(aut2) AND
     AND fos1 = fos2
 RETURN DISTINCT aut2.name, aut1.name
 \end{lstlisting}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{query/query3.PNG}
+\caption{Results: 526 records after 2 ms and completed after 948 ms}
+\label{fig:query3}
+\end{figure}
 
 \subsection{Query 4 - Function (minimum path)}
 Find shortest path of WRITES links between an author that wrote a publication for a Stanford University and another author
-that wrote and article for a California University\\
+that wrote and article for a California University.\\
 \textbf{Description:} we match 2 authors such that one has published at least once in affiliation with Stanford university and the other with California university.
 We check that the 2 authors are not the same and then we compute the shortest path between them (composed of WRITES relationships) bounded to 5 steps.
-Then for all the obtained paths we keep the ones with length > 2 to avoid trivial path\\
+Then for all the obtained paths we keep the ones with length > 2 to avoid trivial path.\\
 \textbf{Note:} graph image is a subset of actual query result (PATH: Kunnle ->...-> Krste)
 \begin{lstlisting}[language=cypher, label=lst:cypher-example]
 MATCH (auth1:Author), (auth2:Author)
@@ -692,9 +734,15 @@ MATCH p = shortestPath((auth1)-[:WRITES*1..5]-(auth2))
 WHERE length(p) > 2
 RETURN p, auth1.name, auth2.name
 \end{lstlisting}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{query/query4.jpeg}
+\caption{Results: 18 records after 29 ms and completed after 1264 ms}
+\label{fig:query4}
+\end{figure}
 
 \subsection{Query 5 - 3 nodes, conditions, aggregations, limits}
-Find the venue with the highest average number of citations of its publications starting from year 1990 and return the most frequent field of study of its publications\\
+Find the venue with the highest average number of citations of its publications starting from year 1990 and return the most frequent field of study of its publications.\\
 \textbf{Description:} we match all the publications that have the year attribute > 1990, then we group with respect to the venue they've been published.
 Then for each venue we compute the average of the number of citations of the articles that were published on it.
 After that we order the averages by descending order and keep the greatest one. Then we match all the fields of study of all the articles (ignoring the publication date)
@@ -712,6 +760,147 @@ WITH fos, count(*) AS fosN, venue
 ORDER BY fosN DESC LIMIT 1
 RETURN venue.raw AS VenueRaw, fos.name AS FieldOfStudy, fosN AS FieldOfStudyOccurrence
 \end{lstlisting}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{query/query5.PNG}
+\caption{Results: 1 records after 1 ms and completed after 158 ms}
+\label{fig:query5}
+\end{figure}
+
+\subsection{Query 6}
+Find the 3 most common fos (and their count) of the articles published on the volume of \emph{Clinical Orthopaedics and Related Research}
+that received the greatest number of total citations.\\
+\textbf{Description:} we match the specific journal using the raw, then we aggregate with respect to the volume on which
+articles were published and sum their number of citations. Then we order by descending order and keep the 1st volume. Finally,
+we match all the relationships with that volume involving the same venue as before, grouping by fields of study and counting
+their occurrencies. We return the top 3 fields of study according to their count.
+\begin{lstlisting}[language=cypher, label=lst:cypher-example]
+MATCH (j:Journal{raw:'Clinical Orthopaedics and Related Research'})<-[p:PUBLISHED]-(art)
+WITH p.volume as pVolume, sum(art.n_citation) as totalVolumeCitations
+ORDER BY totalVolumeCitations DESC LIMIT 1
+MATCH (j:Journal{raw:'Clinical Orthopaedics and Related Research'})<-[p:PUBLISHED{volume:pVolume}]-(art)
+MATCH (art)-[:REGARDS]->(fos)
+WITH fos, count(*) as fosCount
+ORDER BY fosCount DESC LIMIT 3
+RETURN fos.name as fieldOfStudy,fosCount
+\end{lstlisting}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.3\textwidth]{query/query6.PNG}
+\label{fig:query6}
+\end{figure}
+
+\subsection{Query 7}
+Find the authors of the article that cites articles with the greatest number of different years of publication.\\
+\textbf{Description:} we match in a subquery the \verb |REFERENCES| relationships and return all the article-year(of the
+referenced article) pairs. Then, we count for each article all the year values returned by the previous subquery. We
+order the articles according to the count in descending order and keep the top one. Then we match the authors of the top
+1 article and return their names.
+\begin{lstlisting}[language=cypher, label=lst:cypher-example]
+CALL {
+    MATCH (art1:Publication)-[:REFERENCES]->(art2:Publication)
+    RETURN DISTINCT art1 , art2.year AS year
+}
+WITH art1, count(year) as nCount
+ORDER BY nCount DESC LIMIT 1
+MATCH (author)-[:WRITES]->(art1)
+RETURN author.name
+\end{lstlisting}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.3\textwidth]{query/query7.PNG}
+\caption{Results: 4 records after 1 ms and completed after 27 ms}
+\label{fig:query7}
+\end{figure}
+
+\subsection{Query 8}
+Find the authors that have written an article for \emph{Stanford} and an article for another organization.\\
+\textbf{Description:} We match for each author 2 publications such that one has been written in affiliation with \emph{Stanford}
+and the other one not (the previous condition ensures that the two articles are different). Finally we return the articles'
+names and their author name.
+\begin{lstlisting}[language=cypher, label=lst:cypher-example]
+MATCH (article)<-[w1:WRITES]-(author)-[w2:WRITES]->(article1)
+WHERE w1.org CONTAINS "Stanford" AND NOT w2.org CONTAINS "Stanford"
+RETURN article1.title,article.title, author.name
+\end{lstlisting}
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{query/query8.PNG}
+\caption{Results: 2 records after 1 ms and completed after 31 ms}
+\label{fig:query8}
+\end{figure}
+
+\subsection{Query 9}
+Find the shortest path (of length at least 2) of references between a specific publication and a publication written in
+affiliation with \emph{Stanford University}.\\
+\textbf{Description:} we match the publication with a specific id and another publication that has been written in
+affiliation with \emph{Stanford}. We compute the shortest path of \verb |REFERENCES| relationships connecting them, bounding
+the search to 5 steps of depth).
+\begin{lstlisting}[language=cypher, label=lst:cypher-example]
+MATCH (a:Publication{id:'53e9a0eeb7602d97029d96d3'}),
+    (a2:Publication),
+    p = shortestPath((a)-[:REFERENCES*1..5]->(a2))
+WHERE EXISTS {
+    (auth1)-[w:WRITES]->(a2)
+    WHERE w.org CONTAINS 'Stanford'
+}
+AND length(p) > 2
+RETURN p
+\end{lstlisting}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{query/query9.PNG}
+\caption{Results: 1 records in less than 1 ms and completed after 44 ms}
+\label{fig:query9}
+\end{figure}
+
+\subsection{Query 10}
+All articles written by authors that combined have all 26 letters of alphabet, venue \verb |SIGIR|.\\
+\textbf{Description:} We match all the articles published on a specific venue, then we match all the writes relationships
+and for each publication we combine all the authors' name letters together and keep the publications where the combined
+authors' letters are covering the entire alphabet (case insensitive and ignoring special characters). Finally we return
+the publication title and the list of all the authors' names
+\begin{lstlisting}[language=cypher, label=lst:cypher-example]
+MATCH (art:Publication)-[:PUBLISHED]->(venue{raw: 'SIGIR'})
+MATCH (art)<-[w:WRITES]-(aut:Author)
+WITH art, apoc.text.join(COLLECT(aut.name), ', ') AS authors
+WITH art, authors, split(toLower(authors), "") AS letterList
+UNWIND letterList AS letters
+WITH DISTINCT art, authors, letters
+WHERE letters =~ '[a-z]'
+WITH art, authors, COUNT(letters) AS diffLetters
+WHERE diffLetters = 26
+RETURN art.title AS title, authors
+\end{lstlisting}
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{query/query10.PNG}
+\label{fig:query10}
+\end{figure}
+
+\subsection{Query 11}
+Find the article with most distinct university affiliations.\\
+\textbf{Description:} We match all the \verb |WRITES| relationships (we could have used the \verb |WITH| keyword instead
+of \verb |CALL|). This subquery returns all the distinct article-affiliation pairs. Then we group wrt the article and
+count its affiliations. We order the articles by the count in descending order and keep only the one with the greatest
+number of different affiliations.
+\textbf{Note:} this query complexity is of 2 nodes, but we decided to present it because of the importance of the results.
+\begin{lstlisting}[language=cypher, label=lst:cypher-example]
+CALL{
+MATCH(article:Publication)<-[w:WRITES]-(author:Author)
+RETURN DISTINCT article, w.org as org
+}
+WITH  article, count(*) as n
+ORDER BY n DESC LIMIT 1
+RETURN  article.title,  n as AffiliationsCount
+\end{lstlisting}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{query/query11.PNG}
+\caption{Results: 1 records after 1 ms and completed after 31 ms}
+\label{fig:query11}
+\end{figure}
+
 
 \chapter{Conclusion}
 Some interesting conclusions can be drawn from the development of this project: designing a Graph DB allows us to open a new
