@@ -280,18 +280,18 @@ problem, we will store data in a graph database, allowing us to visualize relati
 \newpage
 The ER diagram designed contains the following entities:
 \begin{itemize}
-    \item \textbf{Publication:} this entity represents all the scientific articles. They are identified by their primary key \emph{\_id}
-            and other important attributes are: \emph{DOI, title, last\_edit\_data, abstract, keywords, pages, pub\_date}.
+    \item \textbf{Publication:} this entity represents all the scientific articles. They are identified by their primary key \emph{pubId}
+            and other important attributes are: \emph{title, nCitations, abstract, DOI, keywords, year}.
             Of course the attributes of such entity could be enlarged, but as a sample dataset we have believed these are enough.
             Publication entity is the superclass of a Total and Exclusive ISA relationship with the following subclasses:
             \emph{Journal article, Conference \& Workshop paper, Informal publication, Thesis, Book}
-    \item \textbf{Author:} it represents all the people that submitted at least one publication. Its primary key is \emph{\_id} and the
-            foreign keys are: \emph{name, surname, nationality, paperCount, citationCount}.
+    \item \textbf{Author:} it represents all the people that submitted at least one publication. Its primary key is \emph{authId} and the
+            foreign keys are: \emph{name, orcid, nationality}.
             Of course the attributes of such entity could be enlarged, but as a sample dataset we have believed these are enough
     \item \textbf{Venue:} it's the entity that represents the type of a publication. This is a superclass that creates a Partial and Exclusive
             ISA relationship with the two subclasses \emph{Journal} and \emph{Conference}.
-            The primary key is \emph{raw} and the other keys are: \emph{name, date, venue\_id}
-    \item \textbf{Field Of Study:} this entity represents the topics of the related publication
+            The primary key is \emph{venueId} and the other keys are: \emph{name, ISSN, year, publisher, raw}
+    \item \textbf{Field Of Study:} this entity represents the topics of the related publication and its primary key is \emph{name}
 \end{itemize}
 \bigskip
 
@@ -299,9 +299,9 @@ The ER diagram designed contains the following relationships:
 \begin{itemize}
     \item \textbf{Writes:} is the relationship between \emph{author} and \emph{publication} which specifies also the affiliation
             with the org\_id and the org\_name
-    \item \textbf{Mentions:} occurs between two \emph{publication} and specifies when a publication refers to another one
-    \item \textbf{Is about:} binds a \emph{publication} with its \emph{fields of study}
-    \item \textbf{Published on:} simply relates a \emph{publication} to its \emph{venue}
+    \item \textbf{References:} occurs between two \emph{publication} and specifies when a publication refers to another one
+    \item \textbf{Regards:} binds a \emph{publication} with its \emph{fields of study}
+    \item \textbf{Published:} simply relates a \emph{publication} to its \emph{venue}
 \end{itemize}
 
 \section{Important differences between ER and the implementation}
@@ -320,10 +320,11 @@ The ER diagram designed contains the following relationships:
 \section{Dataset Preprocessing}
 The dataset we used is based on DBLP-Citation-network V13 at \url{https://www.aminer.org/citation} whose size is 13GB. Using
 \textbf{Pandas Profiling} we analyzed the dataset focusing our attention on distinctness and completeness of the attributes.
-We used this result for selecting primary keys (attributes with high values of distinctness and low missing values), to ignore
-fields that were not informative, and also to filter the tuples. Then we sliced the entire dataset obtaining a subset of 16MB.
-The slicing operation was not performed randomly in order not to obtain a subset of the dataset containing some publications but any
-of the publications referenced by them. The working sample of ~6400 publications was obtained in this way:
+We used this result for selecting the property to be used during the merge operation (attributes with high values of distinctness
+and low missing values), to ignore fields that were not informative, and also to filter the tuples. Then we sliced the entire
+dataset obtaining a subset of 16MB. The slicing operation was not performed randomly in order not to obtain a subset of the
+dataset containing some publications but any of the publications referenced by them. The working sample of ~6400 publications
+was obtained in this way:
 \begin{itemize}
     \item first a partition of 20M rows was extracted from the original database so that we started from a pool of 257K articles
         instead of using all the original database of ~5.4M articles, we used 5\% as a sample to speed up the sample generation
@@ -344,8 +345,8 @@ In this section we will present all the attributes contained, pointing which of 
 \subsection{Publication}
 Publication represent the central concept of the system and contains:
 \begin{itemize}
-    \item \textbf{\_id} is an alphanumeric string that is the primary key, that's because is unique and every
-            nodes owns this parameter
+    \item \textbf{\_id} is an alphanumeric string that was used during the merge operation, that's because is unique and
+            every nodes owns this parameter
     \item \textbf{title} represents the title of the publication
     \item \textbf{authors} is an array of authors that will be presented later
     \item \textbf{venue} defines an entity that will be presented later
@@ -380,8 +381,8 @@ Publication represent the central concept of the system and contains:
 \subsection{Author}
 Author is the most present entity of the system and contains:
 \begin{itemize}
-    \item \textbf{\_id} is an alphanumeric string that is the primary key, that's because is unique and almost every nodes
-            owns this parameter
+    \item \textbf{\_id} is an alphanumeric string that was used during the merge operation, that's because is unique and
+            almost every nodes owns this parameter
     \item \textbf{name} is the name of the author
     \item \textbf{org} is a string that represents the organization in which the author works. It is used as an attribute 
             of the relationship \emph{Writes} described before
@@ -456,16 +457,16 @@ The designed graph diagram presented below, represents the following nodes:
 The diagram also represents the following links:
 \begin{itemize}
     \item \textbf{Writes} links \emph{Authors} with their \emph{Publications}
-    \item \textbf{Publishes} links \emph{Publications} with the \emph{Venues} in which it was published
+    \item \textbf{Published} links \emph{Publications} with the \emph{Venues} in which it was published
     \item \textbf{Regards} links \emph{Publications} with the covered \emph{Fields of Study}
-    \item \textbf{Mentions} links a \emph{Publication} with another one cited
+    \item \textbf{References} links a \emph{Publication} with another one cited
 \end{itemize}
 \bigskip
 In the following diagram we decided to instantiate two \emph{Authors}, two \emph{Publications}, two \emph{Fields of Study} and
 two \emph{Venues} (one \emph{Journal} and one \emph{Conference}) in order to efficiently describe the system functionalities. \newline
 In this case \emph{Author1} wrote both the \emph{Publications}, while the other one wrote only \emph{Publication2}.
 Both the \emph{Publications} covered the same \emph{Fields of Study} but \emph{Publication1} was published in a conference,
-while the other one was published in a journal. At the end we have to say that exists a relationship \emph{Mentions} that
+while the other one was published in a journal. At the end we have to say that exists a relationship \emph{References} that
 links \emph{Publication1} with \emph{Publication2}.
 \begin{figure}[H]
     \centering
@@ -507,7 +508,7 @@ MERGE(author)-[writes:WRITES]->(publication) ON CREATE SET
     writes.org=aut.org,
     writes.orgid=aut.orgid
         \end{lstlisting}
-        Added 23365 labels, created 23365 nodes, set 138863 properties, created 18534 relationships, completed after 104197 ms.
+        Added 23365 labels, created 23365 nodes, set 138863 properties, created 18534 relationships.
     \item Create \verb |REFERENCE| relationship between \emph{Articles}:
         \begin{lstlisting}[language=cypher, label=lst:cypher-example]
 call apoc.load.json("test.json") yield value
@@ -533,7 +534,7 @@ MERGE(article)-[pub:PUBLISHED]->(venue) ON CREATE SET
     pub.online_issn = art.venue.online_issn,
     pub.publisher = art.venue.publisher
         \end{lstlisting}
-        Added 2133 labels, created 2133 nodes, set 22676 properties, created 4846 relationships, completed after 22029 ms.
+        Added 2133 labels, created 2133 nodes, set 22676 properties, created 4846 relationships.
     \item Create \emph{Journal} when \verb |raw| exists and \verb |type| equal to 1:
         \begin{lstlisting}[language=cypher, label=lst:cypher-example]
 call apoc.load.json("test.json") yield value
@@ -549,7 +550,7 @@ MERGE(article)-[pub:PUBLISHED]->(venue) ON CREATE SET
     pub.online_issn = art.venue.online_issn,
     pub.publisher = art.venue.publisher
         \end{lstlisting}
-        Added 256 labels, created 256 nodes, set 1681 properties, created 351 relationships, completed after 6576 ms.
+        Added 256 labels, created 256 nodes, set 1681 properties, created 351 relationships.
     \item Create \emph{Generic Venue} when \verb |raw| doesn't exist or \verb |type| different from 0 or 1:
         \begin{lstlisting}[language=cypher, label=lst:cypher-example]
 call apoc.load.json("test.json") yield value
@@ -565,7 +566,7 @@ MERGE(article)-[pub:PUBLISHED]->(venue) ON CREATE SET
     pub.online_issn = art.venue.online_issn,
     pub.publisher = art.venue.publisher
         \end{lstlisting}
-        Added 586 labels, created 586 nodes, set 5122 properties, created 1116 relationships, completed after 8705 ms.
+        Added 586 labels, created 586 nodes, set 5122 properties, created 1116 relationships.
     \item Create \emph{Field of Study} and \verb |REGARD| relationship between \emph{FoS} and \emph{Publication}:
         \begin{lstlisting}[language=cypher, label=lst:cypher-example]
 call apoc.load.json("test.json") yield value
@@ -575,7 +576,7 @@ MATCH(publication:Publication{id:pub._id})
 MERGE(fos:Fos{name:f})
 MERGE (publication)-[:REGARDS]->(fos)
         \end{lstlisting}
-        Added 13210 labels, created 13210 nodes, set 13210 properties, created 59740 relationships, completed after 371223 ms.
+        Added 13210 labels, created 13210 nodes, set 13210 properties, created 59740 relationships.
 \end{enumerate}
 
 
@@ -675,7 +676,7 @@ RETURN DISTINCT venue.raw
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.6\textwidth]{query/query1.PNG}
-\caption{Results: 6 records after 1 ms and completed after 44 ms}
+\caption{Results: 6 records}
 \label{fig:query1}
 \end{figure}
 
@@ -697,7 +698,7 @@ RETURN venues.raw AS Venue, collect(fos.name) AS FieldsOfStudy
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{query/query2.PNG}
-\caption{Results: 1 records after 1 ms and completed after 24 ms}
+\caption{Results: 1 records}
 \label{fig:query2}
 \end{figure}
 
@@ -722,7 +723,7 @@ RETURN DISTINCT aut2.name, aut1.name
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.6\textwidth]{query/query3.PNG}
-\caption{Results: 526 records after 2 ms and completed after 948 ms}
+\caption{Results: 526 records}
 \label{fig:query3}
 \end{figure}
 
@@ -749,7 +750,7 @@ RETURN p, auth1.name, auth2.name
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{query/query4.jpeg}
-\caption{Results: 18 records after 29 ms and completed after 1264 ms}
+\caption{Results: 18 records}
 \label{fig:query4}
 \end{figure}
 
@@ -775,7 +776,7 @@ RETURN venue.raw AS VenueRaw, fos.name AS FieldOfStudy, fosN AS FieldOfStudyOccu
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{query/query5.PNG}
-\caption{Results: 1 records after 1 ms and completed after 158 ms}
+\caption{Results: 1 records}
 \label{fig:query5}
 \end{figure}
 
@@ -799,6 +800,7 @@ RETURN fos.name as fieldOfStudy,fosCount
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.3\textwidth]{query/query6.PNG}
+\caption{Results: 3 records}
 \label{fig:query6}
 \end{figure}
 
@@ -821,7 +823,7 @@ RETURN author.name
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.3\textwidth]{query/query7.PNG}
-\caption{Results: 4 records after 1 ms and completed after 27 ms}
+\caption{Results: 4 records}
 \label{fig:query7}
 \end{figure}
 
@@ -838,7 +840,7 @@ RETURN article1.title,article.title, author.name
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{query/query8.PNG}
-\caption{Results: 2 records after 1 ms and completed after 31 ms}
+\caption{Results: 2 records}
 \label{fig:query8}
 \end{figure}
 
@@ -862,7 +864,7 @@ RETURN p
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.6\textwidth]{query/query9.PNG}
-\caption{Results: 1 records in less than 1 ms and completed after 44 ms}
+\caption{Results: 1 records}
 \label{fig:query9}
 \end{figure}
 
@@ -887,6 +889,7 @@ RETURN art.title AS title, authors
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{query/query10.PNG}
+\caption{Results: 1 records}
 \label{fig:query10}
 \end{figure}
 
@@ -909,7 +912,7 @@ RETURN  article.title,  n as AffiliationsCount
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{query/query11.PNG}
-\caption{Results: 1 records after 1 ms and completed after 31 ms}
+\caption{Results: 1 records}
 \label{fig:query11}
 \end{figure}
 
@@ -920,26 +923,5 @@ perspective in database creation. This technology enables an efficient visualiza
 flexible than classical relational databases. \newline
 Another very useful aspect of this project were the dataset pre-processing operation and the profiling that allows us to deal
 with a real world problem of managing data.
-
-%-------------------------------------------------------------------------
-%	APPENDICES
-%-------------------------------------------------------------------------
-
-\cleardoublepage
-\addtocontents{toc}{\vspace{2em}} % Add a gap in the Contents, for aesthetics
-\appendix
-\chapter{Appendix A}
-If you need to include an appendix to support the research in your thesis, you can place it at the end of the manuscript.
-An appendix contains supplementary material (figures, tables, data, codes, mathematical proofs, surveys, \dots)
-which supplement the main results contained in the previous chapters.
-
-
-% LIST OF FIGURES
-\listoffigures
-
-% LIST OF TABLES
-\listoftables
-
-\cleardoublepage
 
 \end{document}
