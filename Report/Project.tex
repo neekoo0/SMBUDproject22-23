@@ -244,7 +244,7 @@ In this chapter will be presented the problem specification and the hypothesis u
 This project aims to build an Information System that handles scientific articles contained in the DBLP
 bibliography. The project involves managing the type of the articles and the associated DOI (Digital Object Identifier),
 which identifies a publication or a document and links to it on the web. Other entities to deal with are authors, identified by
-an ID or ORCID (Open Researcher and Contributor ID), and their affiliations with organizations. In order to address the
+an ID or an ORCID (Open Researcher and Contributor ID), and their affiliations with organizations. In order to address the
 problem, we will store data in a graph database, allowing us to visualize relations and handle information correctly.
 
 
@@ -287,7 +287,7 @@ The ER diagram designed contains the following entities:
             \emph{Journal article, Conference \& Workshop paper, Informal publication, Thesis, Book}
     \item \textbf{Author:} it represents all the people that submitted at least one publication. Its primary key is \emph{authId} and the
             foreign keys are: \emph{name, orcid, nationality}.
-            Of course the attributes of such entity could be enlarged, but as a sample dataset we have believed these are enough
+            Obviously the attributes of such entity could be enlarged, but as a sample dataset we have believed these are enough
     \item \textbf{Venue:} it's the entity that represents the type of a publication. This is a superclass that creates a Partial and Exclusive
             ISA relationship with the two subclasses \emph{Journal} and \emph{Conference}.
             The primary key is \emph{venueId} and the other keys are: \emph{name, ISSN, year, publisher, raw}
@@ -308,7 +308,7 @@ The ER diagram designed contains the following relationships:
 \begin{itemize}
     \item as it will be explained in the section 3.2.3 in the implementation we decided to distinguish between different venue
             nodes using the \emph{raw} property. In such way we needed to move some venue attributes (volume, issue, publisher, ISSN)
-            to the relationship \emph{Published}. This has been done due low data quality of the dataset with respect to the venue entity.
+            to the relationship \emph{Published}. This has been done due to the low data quality of the dataset with respect to the venue entity.
     \item the publication hierarchy has not been implemented because the dataset used doesn't distinguish between different types of
             publications. We decided to represent the conceptual ER in this way taking inspiration from the DBLP.org site description
     \item some attributes that have been included in the ER are missing in the implementation because either unnecessary from queries
@@ -318,26 +318,25 @@ The ER diagram designed contains the following relationships:
 \chapter{Dataset Description}
 
 \section{Dataset Preprocessing}
-The dataset we used is based on DBLP-Citation-network V13 at \url{https://www.aminer.org/citation} whose size is 13GB. Using
+The dataset we used is based on DBLP-Citation-network V13 at \url{https://www.aminer.org/citation} whose size is 17GB. Using
 \textbf{Pandas Profiling} we analyzed the dataset focusing our attention on distinctness and completeness of the attributes.
-We used this result for selecting the property to be used during the merge operation (attributes with high values of distinctness
+We used this result for selecting the property to be used during the merge operation (i.e. attributes with high values of distinctness
 and low missing values), to ignore fields that were not informative, and also to filter the tuples. Then we sliced the entire
 dataset obtaining a subset of 16MB. The slicing operation was not performed randomly in order not to obtain a subset of the
-dataset containing some publications but any of the publications referenced by them. The working sample of ~6400 publications
+dataset containing some publications but any of the publications referenced by them. The working sample of about 6400 publications
 was obtained in this way:
 \begin{itemize}
     \item first a partition of 20M rows was extracted from the original database so that we started from a pool of 257K articles
-        instead of using all the original database of ~5.4M articles, we used 5\% as a sample to speed up the sample generation
+        instead of using all the original database of ~5.4M articles, we used 5\% as a partition to speed up the sample generation
         process
-    \item then an extract of 4K publications was used as a base, we arbitrarily picked the ones from position 20000 to 24000
+    \item then an extract of 4K publications was used as a base, we arbitrarily picked the ones from position 20000 to 24000 of the partition
     \item in the end the ids of those 4K publications were looked up inside our partition to obtain also articles that cited
         them, in order to have sufficient relationships to make different queries
 \end{itemize}
 The following is a part of the script used for the operation just described:
 \lstinputlisting[language=Python]{Code/samplePython.txt}
 \bigskip
-In the end, we have to say that we didn't add extra data to our slice of the dataset in order to maintain the coherency of the
-information.
+Note that we didn't add extra data to our slice of the dataset in order to maintain the coherency of the information.
 
 \section{Attributes Description}
 In this section we will present all the attributes contained, pointing which of them are considered or not.
@@ -348,11 +347,11 @@ Publication represent the central concept of the system and contains:
     \item \textbf{\_id} is an alphanumeric string that was used during the merge operation, that's because is unique and
             every nodes owns this parameter
     \item \textbf{title} represents the title of the publication
-    \item \textbf{authors} is an array of authors that will be presented later
+    \item \textbf{authors} is a set of authors that will be presented later
     \item \textbf{venue} defines an entity that will be presented later
     \item \textbf{year} represents the year of publication
-    \item \textbf{keywords} is an array containing the tag of subjects faced in the publication
-    \item \textbf{fos} is an array containing the fields of study of the publication
+    \item \textbf{keywords} is a set containing the tag of subjects faced in the publication
+    \item \textbf{fos} is a set containing the fields of study of the publication
     \item \textbf{n\_citation} is the number of times that this publication has been mentioned
     \item \textbf{page\_start} defines the starting page of the publication. This attribute wasn't take into consideration
             because doesn't target the goal of the project
@@ -371,10 +370,10 @@ Publication represent the central concept of the system and contains:
             due to an acceptable missing percentage, much lower than the one affecting issn or isbn attributes
     \item \textbf{pdf} contains a string that links to the publication PDF online. This attribute wasn't take into
             consideration due to the presence of many missing or null values
-    \item \textbf{url} contains an array of links to the publication resources online. This attribute wasn't take into
+    \item \textbf{url} contains a set of links to the publication resources online. This attribute wasn't take into
             consideration because doesn't target the goal of the project
     \item \textbf{abstract} is a string containing a brief summary of the contents of the paper
-    \item \textbf{references} is an array of ids representing the publication mentioned
+    \item \textbf{references} is a set of ids representing the publication mentioned
 \end{itemize}
 \bigskip
 
@@ -390,7 +389,7 @@ Author is the most present entity of the system and contains:
             take into consideration due to the presence of many missing or null values
     \item \textbf{orgid} is an identifier that represents the organization in which the author works. It is used as an 
             attribute of the relationship \emph{Writes} described before
-    \item \textbf{orgs} is an array of organizations for which the author worked. This attribute wasn't take into 
+    \item \textbf{orgs} is a set of organizations for which the author worked. This attribute wasn't take into 
             consideration due to the presence of many missing or null values
     \item \textbf{email} is a string containing the email address of the author. This attribute wasn't take into
             consideration due to the presence of many missing or null values and because doesn't target the goal of the 
@@ -403,9 +402,9 @@ Author is the most present entity of the system and contains:
             the presence of many missing or null values   
     \item \textbf{sid} is an identifier for the author. This attribute wasn't take into consideration due to the
             presence of many missing or null values
-    \item \textbf{name\_zh} is the name of the organization in which the author works. This attribute wasn't take
+    \item \textbf{name\_zh} is a field that describe name in chinese language. This attribute wasn't take
             into consideration due to the presence of many missing or null values
-    \item \textbf{org\_zh} is an identifier that represents the organization in which the author works. This attribute
+    \item \textbf{org\_zh} is a field that describe the organization in chinese language. This attribute
             wasn't take into consideration due to the presence of many missing or null values
 \end{itemize}
 \bigskip
@@ -442,7 +441,7 @@ the following attributes:
 \end{itemize}
 
 \chapter{Graph Diagram}
-The designed graph diagram presented below, represents the following nodes:
+The designed graph diagram presented on the next page represents the following nodes:
 \begin{itemize}
     \item \textbf{Publication} has two nodes in the diagram and they represent the central concept of the system. They are
         linked to the following entities: \emph{Author}, \emph{Field of Study}, \emph{Venue} or to another \emph{Publication}
@@ -465,9 +464,9 @@ The diagram also represents the following links:
 In the following diagram we decided to instantiate two \emph{Authors}, two \emph{Publications}, two \emph{Fields of Study} and
 two \emph{Venues} (one \emph{Journal} and one \emph{Conference}) in order to efficiently describe the system functionalities. \newline
 In this case \emph{Author1} wrote both the \emph{Publications}, while the other one wrote only \emph{Publication2}.
-Both the \emph{Publications} covered the same \emph{Fields of Study} but \emph{Publication1} was published in a conference,
-while the other one was published in a journal. At the end we have to say that exists a relationship \emph{References} that
-links \emph{Publication1} with \emph{Publication2}.
+Both the \emph{Publications} covered the same \emph{Field of Study} but \emph{Publication1} was published in a conference,
+while the other one was published in a journal. Eventually a relationship \emph{References} that
+links \emph{Publication1} with \emph{Publication2} exists.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.6\textwidth]{graphDiagram.png}
@@ -518,7 +517,7 @@ MATCH (init:Publication{id:pub._id})
 MATCH (final:Publication{id:ref})
 MERGE(init)-[:REFERENCES]->(final)
         \end{lstlisting}
-        Created 2866 relationships, completed after 466136 ms.
+        Created 2866 relationships.
     \item Create \emph{Conference} when \verb |raw| exists and \verb |type| equal to 0:
         \begin{lstlisting}[language=cypher, label=lst:cypher-example]
 call apoc.load.json("test.json") yield value
@@ -582,24 +581,24 @@ MERGE (publication)-[:REGARDS]->(fos)
 
 \chapter{Commands and Queries}
 \section{Commands}
-We have identified the following \verb |INSERT| and \verb |UPDATE| commands in order to show the system basic functionalities.
+We have identified the following \verb |INSERT| and \verb |UPDATE| commands to show the system basic functionalities.
 
 \subsection{Insert two authors in the system}
-Assuming they are not present in the dataset, we simply used the \verb |CREATE| to create those instances.
+Assuming they are not present in the dataset, we used the \verb |CREATE| to create those instances.
 \begin{lstlisting}[language=cypher, label=lst:cypher-example]
 CREATE (author1:Author {id: "54857748dabfae8a11fb2a1e", name: "Emanuele Della Valle", orcid: "0000-0002-5176-5885"})
 CREATE (author2:Author {id: "53f487fbdabfaee4dc8b1e68", name: "Alessio Bernardo", orcid: "0000-0002-3492-0345"})
 \end{lstlisting}
 
 \subsection{Insert Journal Venue where the paper has been published}
-Assuming they are not present in the dataset, we simply used the \verb |CREATE| to create an instance of \emph{Venue (Journal)}
+Assuming they are not present in the dataset, we used the \verb |CREATE| to create an instance of \emph{Venue (Journal)}
 specifying where it was published.
 \begin{lstlisting}[language=cypher, label=lst:cypher-example]
 CREATE (journal:Journal {raw: "ESA", name: "Expert Systems with Applications"})
 \end{lstlisting}
 
 \subsection{Create (if do not exist) publication's fields of study}
-We simply used the \verb |MERGE| to create three instances of \emph{Field Of Study}
+We used the \verb |MERGE| to create three instances of \emph{Field Of Study}
 \begin{lstlisting}[language=cypher, label=lst:cypher-example]
 MERGE (fos1:Fos{name:"Computer Science"})
 MERGE (fos2:Fos{name:"Stream Reasoning"})
@@ -661,9 +660,9 @@ SET article.n_citation = article.n_citation + 1
 We have identified the following queries in order to show the system basic functionalities.
 
 \subsection{Query 1}
-This query return all the venues where have been published the articles of the author that has written the max number of articles\\
-\textbf{Description:} for each author we count how many articles he wrote, then order by the count of written articles by descending order and keep only the top 1 author.
-Then we match all the articles written by this author and then we return the raw of the venue where these articles were published on
+This query returns all the venues where have been published the articles of one of the authors that have written the max number of articles\\
+\textbf{Description:} for each author we count how many articles he wrote, then we order by the count of written articles by descending order and keep only the top 1 author. 
+Eventually we match all the articles written by this author and then we return the raw of the venues in which these articles were published
 \begin{lstlisting}[language=cypher, label=lst:cypher-example]
 MATCH(author:Author)-[:WRITES]->(article:Publication)
 WITH author, count(*) AS articleWritten
@@ -681,10 +680,10 @@ RETURN DISTINCT venue.raw
 \end{figure}
 
 \subsection{Query 2}
-Starting from the author found in query 1 we want to find the article with the max number of co-author and return the venue and fields of study\\
+Starting from the author found in query 1 we want to find the article with the max number of co-authors and return the venue and fields of study\\
 \textbf{Description:} we match a specific author given its id, then we match all his articles and then all the co-authors of his articles.
-Then, for each article we count the number of co-authors and order them by descending order wrt the number of co-authors.
-We keep the top article, then we match its venue and its fields of study and return them by collecting the fos into a list
+Then, for each article we count the number of co-authors and order them by descending order w.r.t. the number of co-authors.
+We keep the top article, then we match its venues and its fields of study and return them by collecting the fos into a list
 \begin{lstlisting}[language=cypher, label=lst:cypher-example]
 MATCH(author:Author{id:'548d281cdabfae8a11fb4ea1'})
 MATCH(author)-[:WRITES]->(article)
@@ -698,15 +697,15 @@ RETURN venues.raw AS Venue, collect(fos.name) AS FieldsOfStudy
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{query/query2.PNG}
-\caption{Results: 1 records}
+\caption{Result: 1 record}
 \label{fig:query2}
 \end{figure}
 
 \subsection{Query 3}
-This query finds all authors that have worked together more than once (on the same field of study)\\
+This query finds all authors that have worked together more than once on the same field of study\\
 \textbf{Description:} we match 2 different authors and 2 different articles in which they collaborated,
 matching also all their fields of study, then we filter by keeping only those who have at least one field of study in common.
-Then we return the name of the two authors\\
+Eventually we return the name of the two authors\\
 \textbf{Note:} the condition on the authors id needed to ensure that every couple is returned only once\\
 \textbf{Note:} query result picture is partial
 \begin{lstlisting}[language=cypher, label=lst:cypher-example]
@@ -776,17 +775,17 @@ RETURN venue.raw AS VenueRaw, fos.name AS FieldOfStudy, fosN AS FieldOfStudyOccu
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{query/query5.PNG}
-\caption{Results: 1 records}
+\caption{Result: 1 record}
 \label{fig:query5}
 \end{figure}
 
 \subsection{Query 6}
 Find the 3 most common fos (and their count) of the articles published on the volume of \emph{Clinical Orthopaedics and Related Research}
 that received the greatest number of total citations.\\
-\textbf{Description:} we match the specific journal using the raw, then we aggregate with respect to the volume on which
+\textbf{Description:} we match the specific journal using the raw, then we aggregate with respect to the volume in which
 articles were published and sum their number of citations. Then we order by descending order and keep the 1st volume. Finally,
 we match all the relationships with that volume involving the same venue as before, grouping by fields of study and counting
-their occurrencies. We return the top 3 fields of study according to their count.
+their occurrences. We return the top 3 fields of study according to their count.
 \begin{lstlisting}[language=cypher, label=lst:cypher-example]
 MATCH (j:Journal{raw:'Clinical Orthopaedics and Related Research'})<-[p:PUBLISHED]-(art)
 WITH p.volume as pVolume, sum(art.n_citation) as totalVolumeCitations
@@ -845,7 +844,7 @@ RETURN article1.title,article.title, author.name
 \end{figure}
 
 \subsection{Query 9}
-Find the shortest path (of length at least 2) of references between a specific publication and a publication written in
+Find the shortest path (of length of at least 2) of references between a specific publication and a publication written in
 affiliation with \emph{Stanford University}.\\
 \textbf{Description:} we match the publication with a specific id and another publication that has been written in
 affiliation with \emph{Stanford}. We compute the shortest path of \verb |REFERENCES| relationships connecting them, bounding
@@ -864,12 +863,12 @@ RETURN p
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.6\textwidth]{query/query9.PNG}
-\caption{Results: 1 records}
+\caption{Result: 1 record}
 \label{fig:query9}
 \end{figure}
 
 \subsection{Query 10}
-All articles written by authors that combined have all 26 letters of alphabet, venue \verb |SIGIR|.\\
+All articles with venue \emph{SIGIR} written by authors that combined have all 26 letters of alphabet, venue \verb |SIGIR|.\\
 \textbf{Description:} We match all the articles published on a specific venue, then we match all the writes relationships
 and for each publication we combine all the authors' name letters together and keep the publications where the combined
 authors' letters are covering the entire alphabet (case insensitive and ignoring special characters). Finally we return
@@ -889,17 +888,17 @@ RETURN art.title AS title, authors
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{query/query10.PNG}
-\caption{Results: 1 records}
+\caption{Result: 1 record}
 \label{fig:query10}
 \end{figure}
 
 \subsection{Query 11}
 Find the article with most distinct university affiliations.\\
 \textbf{Description:} We match all the \verb |WRITES| relationships (we could have used the \verb |WITH| keyword instead
-of \verb |CALL|). This subquery returns all the distinct article-affiliation pairs. Then we group wrt the article and
-count its affiliations. We order the articles by the count in descending order and keep only the one with the greatest
+of \verb |CALL|). This subquery returns all the distinct article-affiliation pairs. Then we group w.r.t. the article and
+count its affiliations. We order the articles by counting in descending order and keep only the one with the greatest
 number of different affiliations.
-\textbf{Note:} this query complexity is of 2 nodes, but we decided to present it because of the importance of the results.
+\textbf{Note:} this query complexity is of 2 nodes, but we decided to present it because of the relevance of the results.
 \begin{lstlisting}[language=cypher, label=lst:cypher-example]
 CALL{
     MATCH(article:Publication)<-[w:WRITES]-(author:Author)
@@ -912,7 +911,7 @@ RETURN  article.title,  n as AffiliationsCount
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{query/query11.PNG}
-\caption{Results: 1 records}
+\caption{Result: 1 record}
 \label{fig:query11}
 \end{figure}
 
@@ -921,7 +920,7 @@ RETURN  article.title,  n as AffiliationsCount
 Some interesting conclusions can be drawn from the development of this project: designing a Graph DB allows us to open a new
 perspective in database creation. This technology enables an efficient visualization of the design choices and it is more
 flexible than classical relational databases. \newline
-Another very useful aspect of this project were the dataset pre-processing operation and the profiling that allows us to deal
+Other very useful aspects of this project were the dataset pre-processing operation and the profiling that allows us to deal
 with a real world problem of managing data.
 
 \end{document}
