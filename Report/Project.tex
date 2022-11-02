@@ -217,25 +217,21 @@ In this chapter will be presented the problem specification and the hypothesis u
 
 \section{Problem Specification}
 \label{sec:prob_specs}
-This project aims to build an Information System that handles scientific articles contained in the DBLP
-bibliography. The project involves managing the type of the articles and the associated DOI (Digital Object Identifier),
-which identifies a publication or a document and links to it on the web. Other entities to deal with are authors, identified by
-an ID or an ORCID (Open Researcher and Contributor ID), and their affiliations with organizations. In order to address the
-problem, we will store data in a graph database, allowing us to visualize relations and handle information correctly.
-
+This project aims to build a graph database that handles scientific articles contained in the DBLP bibliography.
+The focus is on creating a database which allows efficient information retrieval from the publications citation network.
+The main features analyzed are: articles, authors, venues, fields of study and the relations between all of them.
 
 \section{Assumptions}
 \label{sec:assumptions}
 \begin{enumerate}
-    \item All the data in the dataset are heterogeneous, so fields are different
-    \item The \textbf{authors} with missing field \emph{\_id} are not considered
+    \item Data in the sources are heterogeneous and can be inconsistent
     \item It is possible that an author writes for different organizations
-    \item Field \emph{\_id} in \textbf{author} is unique
+    \item Field \emph{\_id} in \textbf{author} exists and it is unique
     \item Field \emph{\_id} in \textbf{article} exists and it is unique
-    \item It is impossible that 2 different articles are on the same journal, in the same \emph{volume} with an intersection between \emph{page\_start} and \emph{page\_end}
-    \item The designed model doesn't take into consideration the URL associated to the article node, as the main focus of the project was not reading the article
     \item It is possible to find a self-reference in a publication
-    \item A \emph{venue} can be instantiated as a journal, a conference or a generic venue
+    \item Venues with \emph{type=0} are Conference
+    \item Venues with \emph{type=1} are Journal
+    \item There is no constraint between the publication type and the venue type in which it is published
 \end{enumerate}
 
 \chapter{ER Diagram}
@@ -256,39 +252,36 @@ problem, we will store data in a graph database, allowing us to visualize relati
 \newpage
 The ER diagram designed contains the following entities:
 \begin{itemize}
-    \item \textbf{Publication:} this entity represents all the scientific articles. They are identified by their primary key \emph{pubId}
-            and other important attributes are: \emph{title, nCitations, abstract, DOI, keywords, year}.
-            Of course the attributes of such entity could be enlarged, but as a sample dataset we have believed these are enough.
-            Publication entity is the superclass of a Total and Exclusive ISA relationship with the following subclasses:
-            \emph{Journal article, Conference \& Workshop paper, Informal publication, Thesis, Book}
-    \item \textbf{Author:} it represents all the people that submitted at least one publication. Its primary key is \emph{authId} and the
-            foreign keys are: \emph{name, orcid, nationality}.
-            Obviously the attributes of such entity could be enlarged, but as a sample dataset we have believed these are enough
-    \item \textbf{Venue:} it's the entity in which a publication is presented. This is a superclass that creates a Partial and Exclusive
-            ISA relationship with the two subclasses \emph{Journal} and \emph{Conference}.
-            The primary key is \emph{venueId} and the other keys are: \emph{name, ISSN, year, publisher, raw}
-    \item \textbf{Field Of Study:} this entity represents the topics of the related publication and its primary key is \emph{name}
+    \item \textbf{Publication:} this entity represents all the scientific articles. They are identified by their key \emph{pubId}.
+            Other important attributes are: \emph{title, nCitations, abstract, DOI, keywords, year}.
+            Publication entity is the superclass of a Total and Exclusive ISA hierarchy with the following subclasses:
+            \emph{Journal article, Conference \& Workshop paper, Informal publication, Thesis, Book}.
+    \item \textbf{Author:} it is the one who contributed to a publication. Its key is \emph{authId} and its attributes are: \emph{name, orcid, nationality}.
+    \item \textbf{Venue:} it is where a publication is published or presented. This is a superclass of a Partial and Exclusive
+            ISA hierarchy with the two subclasses \emph{Journal} and \emph{Conference}.
+            The key is \emph{venueId} and its other attributes are: \emph{name, ISSN, year, publisher, raw}.
+    \item \textbf{Field Of Study:} this entity represents the subjects of the publication and its key is \emph{name}.
 \end{itemize}
 \bigskip
 
 The ER diagram designed contains the following relationships:
 \begin{itemize}
-    \item \textbf{Writes:} is the relationship between \emph{author} and \emph{publication} which specifies also the affiliation
-            with the org\_id and the org\_name
-    \item \textbf{References:} occurs between two \emph{publication} and specifies when a publication refers to another one
-    \item \textbf{Regards:} binds a \emph{publication} with its \emph{fields of study}
-    \item \textbf{Published:} simply relates a \emph{publication} to its \emph{venue}
+    \item \textbf{Writes:} is the relationship between \emph{author} and \emph{publication} which features the affiliation property
+            characterized by org\_id and the org\_name. The affiliation is the institute where the author worked for the publication.
+    \item \textbf{References:} is the relationship between a \emph{publication} and another \emph{publication} cited by the first.
+    \item \textbf{Regards:} is the relationship between a \emph{publication} and its \emph{fields of study}.
+    \item \textbf{Published:} is the relationship between a \emph{publication} and its \emph{venue}.
 \end{itemize}
 
 \section{Important differences between ER and the implementation}
 \begin{itemize}
-    \item as it will be explained in the section 3.2.3 in the implementation we decided to distinguish between different venue
-            nodes using the \emph{raw} property. In such way we needed to move some venue attributes (volume, issue, publisher, ISSN)
+    \item As it will be explained in the section 3.2.3, in the implementation we decided to distinguish between different venue
+            nodes using the \emph{raw} property. In this way we needed to move some venue attributes (volume, issue, publisher, issn, online_issn)
             to the relationship \emph{Published}. This has been done due to the low data quality of the dataset with respect to the venue entity.
-    \item the publication hierarchy has not been implemented because the dataset used doesn't distinguish between different types of
-            publications. We decided to represent the conceptual ER in this way taking inspiration from the DBLP.org site description
-    \item some attributes that have been included in the ER are missing in the implementation because either not relevant from queries
-            point of view or due to the dataset missing those properties (e.g. \emph{nationality} in \emph{Author})
+    \item The publication hierarchy has not been implemented because the dataset used doesn't distinguish between different types of
+            publications. We decided to represent the conceptual ER in this way taking inspiration from the DBLP.org site description.
+    \item Some attributes that have been included in the ER are missing in the implementation because either not relevant from queries
+            point of view or dataset is missing those properties (e.g. \emph{nationality} in \emph{Author}).
 \end{itemize}
 
 \chapter{Dataset Description}
@@ -298,8 +291,8 @@ The dataset we used is based on DBLP-Citation-network V13 at \url{https://www.am
 \textbf{Pandas Profiling} we analyzed the dataset focusing our attention on distinctness and completeness of the attributes.
 We used this result for selecting the property to be used during the merge operation (i.e. attributes with high values of distinctness
 and low missing values), to ignore fields that were not informative, and also to filter the tuples. Then we sliced the entire
-dataset obtaining a subset of 16MB. The slicing operation was not performed randomly in order not to obtain a subset of the
-dataset containing some publications but any of the publications referenced by them. The working sample of about 6400 publications
+dataset obtaining a subset of 16MB. The slicing operation was not performed randomly, in order to avoid a subset of the
+dataset containing some publications but none of the publications referenced by them. The working sample of about 6400 publications
 was obtained in this way:
 \begin{itemize}
     \item first a partition of 20M rows was extracted from the original database so that we started from a pool of 257K articles
@@ -312,91 +305,86 @@ was obtained in this way:
 The following is a part of the script used for the operation just described:
 \lstinputlisting[language=Python]{Code/samplePython.txt}
 \bigskip
-Note that we didn't add extra data to our slice of the dataset in order to maintain the coherency of the information.
+We decide not to add any data to our dataset to preserve data coherency.
 
 \section{Attributes Description}
-In this section we will present all the attributes contained, pointing which of them are considered or not.
+In this section we will present all the attributes contained in the original dataset, pointing out which of them are considered or not.
 
 \subsection{Publication}
 Publication represent the central concept of the system and contains:
 \begin{itemize}
     \item \textbf{\_id} is an alphanumeric string that was used during the merge operation, that's because is unique and
-            every nodes owns this parameter
-    \item \textbf{title} represents the title of the publication
-    \item \textbf{authors} is a set of authors that will be presented later
-    \item \textbf{venue} defines an entity that will be presented later
-    \item \textbf{year} represents the year of publication
-    \item \textbf{keywords} is a set containing the tag of subjects faced in the publication
-    \item \textbf{fos} is a set containing the fields of study of the publication
-    \item \textbf{n\_citation} is the number of times that this publication has been mentioned
+            every nodes has this property.
+    \item \textbf{title} represents the title of the publication.
+    \item \textbf{authors} is a set of authors.
+    \item \textbf{venue} it is where a publication is published or presented.
+    \item \textbf{year} represents the year of publication.
+    \item \textbf{keywords} is a set containing keywords of the publication.
+    \item \textbf{fos} is a set containing the fields of study of the publication.
+    \item \textbf{n\_citation} is the number of times that this publication has been mentioned.
     \item \textbf{page\_start} defines the starting page of the publication. This attribute wasn't take into consideration
-            because doesn't target the goal of the project
+            because doesn't target the goal of the project.
     \item \textbf{page\_end} defines the last page of the publication. This attribute wasn't take into consideration
-            because doesn't target the goal of the project
-    \item \textbf{lang} represents the language of the publication
-    \item \textbf{volume} is the volume of the publication. This attribute is used in the relationship between \emph{Article}
-            and \emph{Venue}
-    \item \textbf{issue} refers to how many times a periodical has been published during that year. This attribute 
-            wasn't take into consideration due to the presence of many missing or null values
-    \item \textbf{issn} is an identification code of the publication. This attribute wasn't take into consideration due
-            to the presence of many missing or null values
-    \item \textbf{isbn} is an identification code of the publication. This attribute wasn't take into consideration due
-            to the presence of many missing or null values
-    \item \textbf{doi} Digital Object Identifier is a persistent identifier. We decided to take it into consideration
-            due to an acceptable missing percentage, much lower than the one affecting issn or isbn attributes
+            because doesn't target the goal of the project.
+    \item \textbf{lang} represents the language of the publication.
+    \item \textbf{volume} is the volume of the venue in which the article has been published. This is a property of the \emph{Publication}
+            - \emph{Venue} relationship.
+    \item \textbf{issue} refers to how many times a periodical has been published during that year.
+    \item \textbf{issn} is an identification code of the venue of the publication. This is a property of the \emph{Publication}
+    - \emph{Venue} relationship.
+    \item \textbf{isbn} is an identification code of the venue of the publication. This attribute wasn't take into consideration.
+    \item \textbf{doi} Digital Object Identifier is a persistent and standardized identifier. We didn't use this attribute as a key
+                    during the importing phase because a significant amount of publication misses it.
     \item \textbf{pdf} contains a string that links to the publication PDF online. This attribute wasn't take into
-            consideration due to the presence of many missing or null values
+            consideration due to the presence of many missing or null values.
     \item \textbf{url} contains a set of links to the publication resources online. This attribute wasn't take into
-            consideration because doesn't target the goal of the project
-    \item \textbf{abstract} is a string containing a brief summary of the contents of the paper
-    \item \textbf{references} is a set of ids representing the publication mentioned
+            consideration because doesn't target the goal of the project.
+    \item \textbf{abstract} is a string containing a brief summary of the contents of the paper.
+    \item \textbf{references} is a set of ids representing the publications mentioned.
 \end{itemize}
 \bigskip
 
 \subsection{Author}
-Author is the most present entity of the system and contains:
+The dataset provides the following author fields:
 \begin{itemize}
     \item \textbf{\_id} is an alphanumeric string that was used during the merge operation, that's because is unique and
-            almost every nodes owns this parameter
-    \item \textbf{name} is the name of the author
-    \item \textbf{org} is a string that represents the organization in which the author works. It is used as an attribute 
+            almost every nodes has this parameter.
+    \item \textbf{name} is the name of the author.
+    \item \textbf{org} is the name of the organization in which the author worked for a specific publication. It is an attribute
             of the relationship \emph{Writes} described before
-    \item \textbf{gid} is an identifier that represents the organization in which the author works. This attribute wasn't
-            take into consideration due to the presence of many missing or null values
-    \item \textbf{orgid} is an identifier that represents the organization in which the author works. It is used as an 
+    \item \textbf{orgid} is the identifier of the organization in which the author worked for a specific publication. It is an
             attribute of the relationship \emph{Writes} described before
-    \item \textbf{orgs} is a set of organizations for which the author worked. This attribute wasn't take into 
-            consideration due to the presence of many missing or null values
-    \item \textbf{email} is a string containing the email address of the author. This attribute wasn't take into
+    \item \textbf{gid} is an alternative to the orgid field. This attribute wasn't take into consideration due to the presence of many missing or null values.
+    \item \textbf{orgs} is a set of organizations for which the author worked. This attribute wasn't take into  consideration
+        due to the presence of many missing or null values
+    \item \textbf{email} is the email address of the author. This attribute wasn't take into
             consideration due to the presence of many missing or null values and because doesn't target the goal of the 
             project
     \item \textbf{orcid} Open Researcher and Contributor ID is a unique identifier for authors of scientific articles.
-            This attribute is taken into consideration although is not always present
+            This attribute is taken into consideration although is not always present.
     \item \textbf{oid} is an identifier for the author. This attribute wasn't take into consideration due to the
-            presence of many missing or null values
+            presence of many missing or null values.
     \item \textbf{bio} is a string that describes the author. This attribute wasn't take into consideration due to 
-            the presence of many missing or null values   
+            the presence of many missing or null values.
     \item \textbf{sid} is an identifier for the author. This attribute wasn't take into consideration due to the
-            presence of many missing or null values
+            presence of many missing or null values.
     \item \textbf{name\_zh} is a field that describe name in chinese language. This attribute wasn't take
-            into consideration due to the presence of many missing or null values
+            into consideration due to the presence of many missing or null values.
     \item \textbf{org\_zh} is a field that describe the organization in chinese language. This attribute
-            wasn't take into consideration due to the presence of many missing or null values
+            wasn't take into consideration due to the presence of many missing or null values.
 \end{itemize}
 \bigskip
 
 \subsection{Venue}
-Venue is the entity that represents where a publication is presented. Thanks to the profiling, we found that venue nodes contains
-the following attributes:
+Venue is where a publication is published or presented. It contains:
 \begin{itemize}
     \item \textbf{\_id} is an alphanumeric identifier. We didn't use this property for the merge operation due to the large
-            amount of missing values
-    \item \textbf{raw} is the name or the abbreviation of the venue (without specifying the year, issue or volume) in which the
-            publication was presented. This property was used during the merge operation thanks to the low number of missing
-            values and to the fact that in this way publications were grouped based on the name or the abbreviation
-            of the venue in which they were presented
+            amount of missing values as previously stated.
+    \item \textbf{raw} is the name or the abbreviation of the venue (regardless the year, issue or volume) in which the
+            publication was presented. This property was used during the merge operation due to the low number of missing
+            values and the fact that in this way publications were grouped based on the name or the abbreviation of the venue in which they were presented.
     \item \textbf{raw\_zh} refers to the event (without specifying the year) in which the publication was presented. 
-            This attribute wasn't take into consideration due to the presence of many missing or null values
+            This attribute wasn't take into consideration due to the presence of many missing or null values.
     \item \textbf{type} indicates the type of the publication. Exploiting the profiling we understood the distribution
             of different values of \emph{type}, and become clear that 0 and 1 were attributable respectively to conference
             and journal. The other values were not easily attributable to other types of publication, so we decided to consider
@@ -405,44 +393,43 @@ the following attributes:
                 \item every \emph{type} values different from 0 or 1
                 \item every entity in which the \emph{type} field is missing
             \end{itemize} 
-    \item \textbf{sid} name of the journal in which the publication was published. This attribute wasn't take into
-            consideration due to the presence of many missing or null values
+    \item \textbf{sid} unclear and frequently missing attribute. This attribute wasn't take into consideration.
     \item \textbf{t} represents the type of the publication. This attribute wasn't take into consideration due to the
-            presence of many missing or null values
-    \item \textbf{issn} is an identification code of the publication
-    \item \textbf{name\_d} is the extended name of the event or volume (without specifying the year) in which the
-            publication was presented
-    \item \textbf{publisher} is a string containing the name of the publisher
-    \item \textbf{online\_issn} is an identification code of the publication
+            presence of many missing or null values.
+    \item \textbf{issn} is an identification code of the venue of the publication. We used the one in Publication instead of
+        this one after seeing the profiling results.
+    \item \textbf{name\_d} is the extended name of the event or volume in which the publication was presented.
+    \item \textbf{publisher} is the name of the publisher of the Venue.
+    \item \textbf{online\_issn} is an alternative identification code with respect to the issn. This is a property of the \emph{Publication}
+        - \emph{Venue} relationship.
 \end{itemize}
 
 \chapter{Graph Diagram}
 The designed graph diagram presented on the next page represents the following nodes:
 \begin{itemize}
-    \item \textbf{Publication} has two nodes in the diagram and they represent the central concept of the system. They are
-        linked to the following entities: \emph{Author}, \emph{Field of Study}, \emph{Venue} or to another \emph{Publication}
-    \item \textbf{Author} has two nodes in the diagram and they represent the authors of at least one scientific article.
-        They are linked to the following entity \emph{Publication}
-    \item \textbf{Venue} has two nodes in the diagram, one instantiated as a \emph{Journal} and the other one as a 
-        \emph{Conference}. They are linked to the following entity \emph{Publication}
-    \item \textbf{Field of Study} has two nodes in the diagram and they represent the topics of the \emph{Publications}. 
-        They are linked to the following entity \emph{Publication}
+    \item \textbf{Publication}
+    \item \textbf{Author}
+    \item \textbf{Venue}
+    \item \textbf{Field of Study}
 \end{itemize}
+The properties of the nodes are the ones described in the previous chapter.
 \bigskip
 The diagram also represents the following links:
 \begin{itemize}
-    \item \textbf{Writes} links \emph{Authors} with their \emph{Publications}
-    \item \textbf{Published} links \emph{Publications} with the \emph{Venues} in which it was published
-    \item \textbf{Regards} links \emph{Publications} with the covered \emph{Fields of Study}
-    \item \textbf{References} links a \emph{Publication} with another one cited
+    \item \textbf{Writes} links \emph{Author} with the \emph{Publication} that he wrote. His properties are \emph{org} and \emph{orgid}
+    that represent the institute where the Author worked for that specific publication.
+    \item \textbf{Published} links \emph{Publication} with the \emph{Venue} in which it was published. His properties are \emph{issue}, \emph{volume}
+    \emph{issn}, \emph{publisher} and \emph{online_issn}.
+    \item \textbf{Regards} links \emph{Publication} with the \emph{Fields of Study}.
+    \item \textbf{References} links a \emph{Publication} with another \emph{Publication} it cites.
 \end{itemize}
 \bigskip
 In the following diagram we decided to instantiate two \emph{Authors}, two \emph{Publications}, two \emph{Fields of Study} and
 two \emph{Venues} (one \emph{Journal} and one \emph{Conference}) in order to efficiently describe the system functionalities. \newline
 In this case \emph{Author1} wrote both the \emph{Publications}, while the other one wrote only \emph{Publication2}.
-Both the \emph{Publications} covered the same \emph{Field of Study} but \emph{Publication1} was published in a conference,
+Both the \emph{Publications} covered the same \emph{Fields of Study} but \emph{Publication1} was published in a conference,
 while the other one was published in a journal. Eventually a relationship \emph{References} that
-links \emph{Publication1} with \emph{Publication2} exists.
+links \emph{Publication1} with \emph{Publication2} exists meaning that \emph{Publication1} cites \emph{Publication2}.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.6\textwidth]{graphDiagram.png}
@@ -542,7 +529,7 @@ MERGE(article)-[pub:PUBLISHED]->(venue) ON CREATE SET
     pub.publisher = art.venue.publisher
         \end{lstlisting}
         Added 586 labels, created 586 nodes, set 5122 properties, created 1116 relationships.
-    \item Create \emph{Field of Study} and \verb |REGARD| relationship between \emph{FoS} and \emph{Publication}:
+    \item Create \emph{Field of Study} and \verb |REGARDS| relationship between \emph{FoS} and \emph{Publication}:
         \begin{lstlisting}[language=cypher, label=lst:cypher-example]
 call apoc.load.json("test.json") yield value
 UNWIND value AS pub
@@ -634,12 +621,12 @@ SET p1.n_citation = p1.n_citation + 1, p2.n_citation = p2.n_citation + 1
 \end{lstlisting}
 
 \section{Queries}
-We have identified the following queries in order to show the system basic functionalities.
+We have identified the following queries in order to show the system's basic functionalities.
 
 \subsection{Query 1}
 This query returns all the venues where have been published the articles of one of the authors that have written the max number of articles\\
 \textbf{Description:} for each author we count how many articles he wrote, then we order by the count of written articles by descending order and keep only the top 1 author. 
-Eventually we match all the articles written by this author and then we return the raw of the venues in which these articles were published
+Eventually we match all the articles written by this author and we return the raw of the venues in which these articles were published
 \begin{lstlisting}[language=cypher, label=lst:cypher-example]
 MATCH(author:Author)-[:WRITES]->(article:Publication)
 WITH author, count(*) AS articleWritten
@@ -705,11 +692,11 @@ RETURN DISTINCT aut2.name, aut1.name
 
 \subsection{Query 4}
 Find shortest path of WRITES links between an author that wrote a publication for a Stanford University and another author
-that wrote and article for a California University.\\
+that wrote an article for a California University.\\
 \textbf{Description:} we match 2 authors such that one has published at least once in affiliation with Stanford university and the other with California university.
 We check that the 2 authors are not the same and then we compute the shortest path between them (composed of WRITES relationships) bounded to 5 steps.
 Then for all the obtained paths we keep the ones with length > 2 to avoid trivial path.\\
-\textbf{Note:} graph image is a subset of actual query result (PATH: Kunnle ->...-> Krste)
+\textbf{Note:} graph image is a subset of actual query result (PATH: Kunle ->...-> Krste)
 \begin{lstlisting}[language=cypher, label=lst:cypher-example]
 MATCH (auth1:Author), (auth2:Author)
 WHERE EXISTS {
@@ -726,7 +713,7 @@ RETURN p, auth1.name, auth2.name
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{query/query4.jpeg}
-\caption{Results: 18 records}
+\caption{Results: 18 records, only 1 path in the figure for readability}
 \label{fig:query4}
 \end{figure}
 
@@ -807,7 +794,7 @@ RETURN COLLECT(author.name) AS authors, nCount
 Find the authors that have written an article for \emph{Stanford} and an article for another organization.\\
 \textbf{Description:} We match for each author 2 publications such that one has been written in affiliation with \emph{Stanford}
 and the other one not (the previous condition ensures that the two articles are different). Finally we return the articles'
-names and their author name.
+title and their author name.
 \begin{lstlisting}[language=cypher, label=lst:cypher-example]
 MATCH (article)<-[w1:WRITES]-(author)-[w2:WRITES]->(article1)
 WHERE w1.org CONTAINS "Stanford" AND NOT w2.org CONTAINS "Stanford"
@@ -845,7 +832,7 @@ RETURN p
 \end{figure}
 
 \subsection{Query 10}
-All articles with venue \emph{SIGIR} written by authors that combined have all 26 letters of alphabet, venue \emph{SIGIR}.\\
+All articles with venue \verb |SIGIR| written by authors that combined have all 26 letters of the alphabet.\\
 \textbf{Description:} We match all the articles published on a specific venue, then we match all the writes relationships
 and for each publication we combine all the authors' name letters together and keep the publications where the combined
 authors' letters are covering the entire alphabet (case insensitive and ignoring special characters). Finally we return
