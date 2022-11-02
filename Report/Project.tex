@@ -615,21 +615,22 @@ CREATE (pub)-[published:PUBLISHED{volume:"196",
     publisher:"Elsevier"}]->(journal)
 \end{lstlisting}
 
-\subsection{Match the publications referenced by the article created before}
+\subsection{Create REFERENCES relationship among the article and the cited ones}
 We \verb |MATCH| the two publications referred by our article and we create \verb |REFERENCES| relationships that link
 the publications already present in the dataset with the article just created
 \begin{lstlisting}[language=cypher, label=lst:cypher-example]
-MATCH (pub1:Pubblication),(pub2:Pubblication)
-WHERE pub1.id = "53e99fe4b7602d97028bf743" AND pub2.id="53e99fddb7602d97028bc085"
-CREATE (pub)-[:REFERENCES]->(pub1), (pub)-[:REFERENCES]->(pub2)
+MATCH (p1:Publication),(p2:Publication),(p:Publication{id:'53e99f86b7612d9702859fdf'})
+WHERE p1.id = "53e99fe4b7602d97028bf743" AND p2.id="53e99fddb7602d97028bc085"
+CREATE (p)-[:REFERENCES]->(p1), (p)-[:REFERENCES]->(p2)
 \end{lstlisting}
 
-\subsection{Increment publication's n\_citation attribute by 1}
-It's an update command that increments the number of citations of the matched \emph{Publication}
+\subsection{Increment cited publications' n\_citation attribute by 1}
+It's an update command that increments the number of citations of the two articles cited by the article that we created
+in the previous commands
 \begin{lstlisting}[language=cypher, label=lst:cypher-example]
-MATCH (article:Publication)
-WHERE article.id = "53e99f86b7612d9702859fdf"
-SET article.n_citation = article.n_citation + 1
+MATCH (p1:Publication), (p2:Publication)
+WHERE p1.id = "53e99fe4b7602d97028bf743" AND p2.id="53e99fddb7602d97028bc085"
+SET p1.n_citation = p1.n_citation + 1, p2.n_citation = p2.n_citation + 1
 \end{lstlisting}
 
 \section{Queries}
@@ -793,12 +794,12 @@ CALL {
 WITH art1, count(year) as nCount
 ORDER BY nCount DESC LIMIT 1
 MATCH (author)-[:WRITES]->(art1)
-RETURN author.name
+RETURN COLLECT(author.name) AS authors, nCount
 \end{lstlisting}
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.3\textwidth]{query/query7.PNG}
-\caption{Results: 4 records}
+\includegraphics[width=1\textwidth]{query/query7.PNG}
+\caption{Results: 1 record}
 \label{fig:query7}
 \end{figure}
 
@@ -844,7 +845,7 @@ RETURN p
 \end{figure}
 
 \subsection{Query 10}
-All articles with venue \emph{SIGIR} written by authors that combined have all 26 letters of alphabet, venue \verb |SIGIR|.\\
+All articles with venue \emph{SIGIR} written by authors that combined have all 26 letters of alphabet, venue \emph{SIGIR}.\\
 \textbf{Description:} We match all the articles published on a specific venue, then we match all the writes relationships
 and for each publication we combine all the authors' name letters together and keep the publications where the combined
 authors' letters are covering the entire alphabet (case insensitive and ignoring special characters). Finally we return
