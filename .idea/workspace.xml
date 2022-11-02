@@ -22,12 +22,7 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="73170083-b618-443a-9db1-678172a646a4" name="Default Changelist" comment="Final neo4j">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Project.tex" beforeDir="false" afterPath="$PROJECT_DIR$/Report/Project.tex" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/Project.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/out/Project.pdf" afterDir="false" />
-    </list>
+    <list default="true" id="73170083-b618-443a-9db1-678172a646a4" name="Default Changelist" comment="minor fix" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -121,7 +116,7 @@
       <workItem from="1667402479654" duration="428000" />
       <workItem from="1667402994106" duration="766000" />
       <workItem from="1667403798239" duration="10745000" />
-      <workItem from="1667417914810" duration="793000" />
+      <workItem from="1667417914810" duration="1452000" />
     </task>
     <task id="LOCAL-00001" summary="code changes">
       <created>1667406296279</created>
@@ -137,7 +132,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667414590279</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="minor fix">
+      <created>1667418841749</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1667418841749</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -157,6 +159,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="code changes" />
     <MESSAGE value="Final neo4j" />
-    <option name="LAST_COMMIT_MESSAGE" value="Final neo4j" />
+    <MESSAGE value="minor fix" />
+    <option name="LAST_COMMIT_MESSAGE" value="minor fix" />
   </component>
 </project>
