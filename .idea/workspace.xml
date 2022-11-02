@@ -22,7 +22,8 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="73170083-b618-443a-9db1-678172a646a4" name="Default Changelist" comment="code changes">
+    <list default="true" id="73170083-b618-443a-9db1-678172a646a4" name="Default Changelist" comment="Final neo4j">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Report/Project.tex" beforeDir="false" afterPath="$PROJECT_DIR$/Report/Project.tex" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/Project.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/out/Project.pdf" afterDir="false" />
@@ -119,7 +120,8 @@
       <workItem from="1667030355352" duration="6920000" />
       <workItem from="1667402479654" duration="428000" />
       <workItem from="1667402994106" duration="766000" />
-      <workItem from="1667403798239" duration="10668000" />
+      <workItem from="1667403798239" duration="10745000" />
+      <workItem from="1667417914810" duration="793000" />
     </task>
     <task id="LOCAL-00001" summary="code changes">
       <created>1667406296279</created>
@@ -128,7 +130,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667406296279</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Final neo4j">
+      <created>1667414590279</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1667414590279</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -147,6 +156,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="code changes" />
-    <option name="LAST_COMMIT_MESSAGE" value="code changes" />
+    <MESSAGE value="Final neo4j" />
+    <option name="LAST_COMMIT_MESSAGE" value="Final neo4j" />
   </component>
 </project>
