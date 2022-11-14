@@ -23,59 +23,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="73170083-b618-443a-9db1-678172a646a4" name="Default Changelist" comment="minor fix">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_01_11_2022_10_05_[Default_Changelist]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_01_11_2022_10_05__Default_Changelist_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_01_11_2022_15_41_[Default_Changelist]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_01_11_2022_15_41__Default_Changelist_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_01_11_2022_17_38_[Default_Changelist]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_01_11_2022_17_38__Default_Changelist_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_02_11_2022_09_19_[Default_Changelist]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_02_11_2022_09_19__Default_Changelist_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_29_10_2022_14_38_[Default_Changelist]/Project.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_29_10_2022_14_38_[Default_Changelist]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_29_10_2022_14_38__Default_Changelist_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_31_10_2022_16_14_[Default_Changelist]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_31_10_2022_16_14__Default_Changelist_.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Neo4jReport.iml" beforeDir="false" afterPath="$PROJECT_DIR$/Neo4jReport.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Code/commands/cmd1.txt" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Code/commands/cmd1.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Code/commands/cmd2.txt" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Code/commands/cmd2.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Code/commands/cmd3.txt" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Code/commands/cmd3.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Code/commands/cmd4.txt" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Code/commands/cmd4.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Code/commands/cmd5.txt" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Code/commands/cmd5.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Code/commands/cmd6.txt" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Code/commands/cmd6.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Code/import/imp1.txt" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Code/import/imp1.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Code/import/imp2.txt" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Code/import/imp2.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Code/import/imp3.txt" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Code/import/imp3.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Code/import/imp4.txt" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Code/import/imp4.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Code/import/imp5.txt" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Code/import/imp5.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Code/import/imp6.txt" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Code/import/imp6.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Code/samplePython.txt" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Code/samplePython.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Configuration_Files/PoliMi3i_thesis.cls" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Configuration_Files/PoliMi3i_thesis.cls" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Configuration_Files/config.tex" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Configuration_Files/config.tex" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Images/02_ING_IND_INFORMAZIONE_COL_POSITIVO.eps" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Images/02_ING_IND_INFORMAZIONE_COL_POSITIVO.eps" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Images/11.png" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Images/11.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Images/ER.png" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Images/ER.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Images/PolimiLogo.png" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Images/PolimiLogo.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Images/graphDiagram.png" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Images/graphDiagram.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Images/legendaER.png" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Images/legendaER.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Images/logo_polimi_scritta.eps" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Images/logo_polimi_scritta.eps" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Images/logo_polimi_scritta2.eps" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Images/logo_polimi_scritta2.eps" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Images/query/query1.PNG" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Images/query/query1.PNG" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Images/query/query10.PNG" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Images/query/query10.PNG" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Images/query/query11.PNG" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Images/query/query11.PNG" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Images/query/query2.PNG" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Images/query/query2.PNG" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Images/query/query3.PNG" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Images/query/query3.PNG" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Images/query/query4.jpeg" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Images/query/query4.jpeg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Images/query/query5.PNG" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Images/query/query5.PNG" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Images/query/query6.PNG" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Images/query/query6.PNG" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Images/query/query7.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Images/query/query8.PNG" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Images/query/query8.PNG" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Images/query/query9.PNG" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Images/query/query9.PNG" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Images/raggiera_polimi.eps" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Images/raggiera_polimi.eps" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Report/Project.tex" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Project.tex" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/Project.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/out/Project.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GraphDB/Project.tex" beforeDir="false" afterPath="$PROJECT_DIR$/GraphDB/Neo4j.tex" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -104,7 +53,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RunManager">
-    <configuration name="LaTeX" type="LATEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory">
+    <configuration name="MongoDB" type="LATEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory">
       <texify>
         <compiler>PDFLATEX</compiler>
         <compiler-path />
@@ -112,7 +61,7 @@
         <viewer-command />
         <compiler-arguments />
         <envs />
-        <main-file>$PROJECT_DIR$/GraphDB/Project.tex</main-file>
+        <main-file>$PROJECT_DIR$/DocumentalDB/MongoDB.tex</main-file>
         <output-path>$PROJECT_DIR$/out</output-path>
         <auxil-path>$PROJECT_DIR$/out</auxil-path>
         <compile-twice>false</compile-twice>
@@ -120,7 +69,7 @@
         <latex-distribution>MIKTEX</latex-distribution>
         <has-been-run>true</has-been-run>
         <bib-run-config>[]</bib-run-config>
-        <makeindex-run-config>[]</makeindex-run-config>
+        <makeindex-run-config />
       </texify>
       <method v="2" />
     </configuration>
@@ -208,42 +157,46 @@
     <option name="LAST_COMMIT_MESSAGE" value="minor fix" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="549" y="167" key="FileChooserDialogImpl" timestamp="1668348258733">
+    <state x="223" y="67" width="1089" height="713" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1668423217500">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="549" y="167" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1668348258733" />
-    <state width="1493" height="210" key="GridCell.Tab.0.bottom" timestamp="1668272868959">
+    <state x="223" y="67" width="1089" height="713" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1536.824@0.0.1536.824" timestamp="1668423217500" />
+    <state x="549" y="167" key="FileChooserDialogImpl" timestamp="1668423213992">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="210" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1668272868959" />
-    <state width="1493" height="210" key="GridCell.Tab.0.center" timestamp="1668272868958">
+    <state x="549" y="167" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1668423213992" />
+    <state width="1493" height="210" key="GridCell.Tab.0.bottom" timestamp="1668422495419">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="210" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1668272868958" />
-    <state width="1493" height="210" key="GridCell.Tab.0.left" timestamp="1668272868958">
+    <state width="1493" height="210" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1668422495419" />
+    <state width="1493" height="210" key="GridCell.Tab.0.center" timestamp="1668422495419">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="210" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1668272868958" />
-    <state width="1493" height="210" key="GridCell.Tab.0.right" timestamp="1668272868958">
+    <state width="1493" height="210" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1668422495419" />
+    <state width="1493" height="210" key="GridCell.Tab.0.left" timestamp="1668422495419">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="210" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1668272868958" />
-    <state width="1493" height="210" key="GridCell.Tab.1.bottom" timestamp="1668272868959">
+    <state width="1493" height="210" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1668422495419" />
+    <state width="1493" height="210" key="GridCell.Tab.0.right" timestamp="1668422495419">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="210" key="GridCell.Tab.1.bottom/0.0.1536.824@0.0.1536.824" timestamp="1668272868959" />
-    <state width="1493" height="210" key="GridCell.Tab.1.center" timestamp="1668272868959">
+    <state width="1493" height="210" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1668422495419" />
+    <state width="1493" height="210" key="GridCell.Tab.1.bottom" timestamp="1668422495420">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="210" key="GridCell.Tab.1.center/0.0.1536.824@0.0.1536.824" timestamp="1668272868959" />
-    <state width="1493" height="210" key="GridCell.Tab.1.left" timestamp="1668272868959">
+    <state width="1493" height="210" key="GridCell.Tab.1.bottom/0.0.1536.824@0.0.1536.824" timestamp="1668422495420" />
+    <state width="1493" height="210" key="GridCell.Tab.1.center" timestamp="1668422495419">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="210" key="GridCell.Tab.1.left/0.0.1536.824@0.0.1536.824" timestamp="1668272868959" />
-    <state width="1493" height="210" key="GridCell.Tab.1.right" timestamp="1668272868959">
+    <state width="1493" height="210" key="GridCell.Tab.1.center/0.0.1536.824@0.0.1536.824" timestamp="1668422495419" />
+    <state width="1493" height="210" key="GridCell.Tab.1.left" timestamp="1668422495419">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="210" key="GridCell.Tab.1.right/0.0.1536.824@0.0.1536.824" timestamp="1668272868959" />
+    <state width="1493" height="210" key="GridCell.Tab.1.left/0.0.1536.824@0.0.1536.824" timestamp="1668422495419" />
+    <state width="1493" height="210" key="GridCell.Tab.1.right" timestamp="1668422495419">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="210" key="GridCell.Tab.1.right/0.0.1536.824@0.0.1536.824" timestamp="1668422495419" />
     <state x="586" y="326" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1668421450559">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
