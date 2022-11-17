@@ -23,7 +23,7 @@
 \usepackage{color}
 
 % PACKAGES FOR LANGUAGE AND FONT
-\usepackage[english]{babel} % The document is in English  
+
 \usepackage[utf8]{inputenc} % UTF8 encoding
 \usepackage[T1]{fontenc} % Font encoding
 \usepackage[11pt]{moresize} % Big fonts
@@ -87,10 +87,41 @@
 %----------------------------------------------------------------------------
 %	ADD YOUR PACKAGES (be careful of package interaction)
 %----------------------------------------------------------------------------
+\usepackage{listings}
+\usepackage{xcolor}
 
-%----------------------------------------------------------------------------
-%	ADD YOUR DEFINITIONS AND COMMANDS (be careful of existing commands)
-%----------------------------------------------------------------------------
+\definecolor{delim}{RGB}{20,105,176}
+\definecolor{numb}{RGB}{20,105,176}
+\definecolor{string}{rgb}{0,0,0}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinelanguage{json}{
+	basicstyle=\normalfont\ttfamily,
+	numbers=left,
+	numberstyle=\scriptsize,
+	stepnumber=1,
+	numbersep=8pt,
+	showstringspaces=false,
+	breaklines=true,
+	frame=false,
+	backgroundcolor=\color{backcolour},
+	literate=
+		*{0}{{{\color{numb}0}}}{1}
+		{1}{{{\color{numb}1}}}{1}
+		{2}{{{\color{numb}2}}}{1}
+		{3}{{{\color{numb}3}}}{1}
+		{4}{{{\color{numb}4}}}{1}
+		{5}{{{\color{numb}5}}}{1}
+		{6}{{{\color{numb}6}}}{1}
+		{7}{{{\color{numb}7}}}{1}
+		{8}{{{\color{numb}8}}}{1}
+		{9}{{{\color{numb}9}}}{1}
+		{\{}{{{\color{delim}{\{}}}}{1}
+		{\}}{{{\color{delim}{\}}}}}{1}
+		{[}{{{\color{delim}{[}}}}{1}
+		{]}{{{\color{delim}{]}}}}{1},
+}
+
 
 %----------------------------------------------------------------------------
 %	BEGIN OF YOUR DOCUMENT
@@ -122,9 +153,6 @@
 	groupnumber=10
 } % These info will be put into your Title page
 
-%----------------------------------------------------------------------------
-%	PREAMBLE PAGES: ABSTRACT (inglese e italiano), EXECUTIVE SUMMARY
-%----------------------------------------------------------------------------
 \startpreamble
 \setcounter{page}{1} % Set page counter to 1
 
@@ -134,7 +162,7 @@
 
 % TABLE OF CONTENTS
 \thispagestyle{empty}
-\tableofcontents % Table of contents 
+\tableofcontents % Table of contents
 \thispagestyle{empty}
 \cleardoublepage
 
@@ -143,5 +171,104 @@
 
 \chapter{Introduction}
 \label{ch:introduction}
+In this chapter will be presented the problem specification and the hypothesis under which the database is implemented.
+
+\section{Problem Specification}
+This project aims to build a documental database that handles scientific articles contained in the DBLP bibliography.
+The focus is on creating a database which allows efficient information retrieval from the publications citation network.
+The main collections analyzed in the project are \emph{Author} and \emph{Publication} with all their attributes and related
+objects like: \emph{Venue, FieldOfStudy, Chapter} and \emph{Image}.
+
+\section{Assumptions}
+
+
+\chapter{ER Diagram}
+\label{ch:erd}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.6\textwidth]{legendaER.png}
+	\caption{ER Diagram Organization}
+	\label{fig:erleg}
+\end{figure}
+\bigskip
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\textwidth]{ERDocDb.png}
+	\caption{ER Diagram}
+	\label{fig:er}
+\end{figure}
+
+
+\chapter{Sample Dataset}
+\label{ch:sample_dataset}
+\begin{lstlisting}[language=json,firstnumber=1]
+{
+	"_id": {
+		"_id": "53e99f86b7602d9702859fdf"
+	},
+	"title": "Locality Sensitive Outlier Detection: A ranking driven approach",
+	"authors": [
+	{
+		"name": "Ye Wang",
+		"org": "Computer Science and Engineering Department, The Ohio State University, USA"
+	},
+	{
+		"name": "Srinivasan Parthasarathy",
+		"org": "Computer Science and Engineering Department, The Ohio State University, USA"
+	},
+	{
+		"name": "Shirish Tatikonda",
+		"org": "Computer Science and Engineering Department, The Ohio State University, USA"
+	}
+	],
+	"n_citation": 60,
+	"abstract": "Outlier detection is fundamental..."
+	"doi": "10.1109/ICDE.2011.5767852",
+	"keywords": [
+		"database point",
+		"ranking scheme",
+		"geometric approach",
+		...
+	],
+	"isbn": "978-1-4244-8958-9",
+	"page_start": "410",
+	"page_end": "421",
+	"year": 2011,
+	"fos": [
+		"Locality-sensitive hashing",
+		"Anomaly detection",
+		"Data mining",
+		...
+	],
+	"venue": {
+		"raw": "ICDE",
+		"type": 0,
+		"volume": "",
+		"issue": "",
+		"publisher": null
+	},
+	"chapters": [{
+		"title": "1. Introduction",
+		"text": "Complicated domain one-to-one and..."
+		"images": [
+			{
+				"caption": "Nena",
+				"link": "https://image.tmdb.org..."
+			},
+			{
+				"caption": "Banking On Bitcoin",
+				"link": "https://image.tmdb.org..."
+			},
+			...
+		]
+	}],
+	"references": [
+		{
+			"_id": "53e99fddb7602d97028b7e65"
+		}
+	]
+}
+\end{lstlisting}
+
 
 \end{document}
