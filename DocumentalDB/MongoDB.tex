@@ -241,19 +241,301 @@ The ER diagram designed contains also the following relationships:
 \section{Commands}
 We have identified the following \verb |INSERT| and \verb |UPDATE| commands to show the system basic functionalities.
 
-\subsection{Insert an author in the system}
-Assuming he is not present in the dataset, we used \verb |insertOne| to create a new instance of \emph{Author}.
+\subsection{Insert a publication in the system}
+\label{pub_insert}
+Assuming it is not present in the dataset, we inserted a new document that is a new instance of \emph{Publication}.
+In order to do that we instantiated 5 different variables: \verb |article_id| that generates an ObjectId representing
+the id of the article we're creating, \verb |article_ref1| and \verb |artcle_ref2| that are the ids of two scientific
+articles cited by this publication, \verb |author1_id| and \verb |author2_id| that are the ids of the authors\newline
+\textbf{Note:} \verb |isbn| field is missing \newline
+\textbf{Note:} \verb |type| = 1 represents a \emph{Journal} \newline
+\textbf{Note:} \verb |issue| field is missing
 \begin{lstlisting}
-db.authors.insertOne([
-	name: "Emanuele Della Valle",
-	orcid: "0000-0002-5176-5885",
-	articles:[
-		{}
+article_id = ObjectId()
+article_ref1 = ObjectId("53e99fe4b7602d97028bf743")
+article_ref2 = ObjectId("53e99fddb7602d97028bc085")
+author1_id = ObjectId()
+author2_id = ObjectId()
+
+db.articles.insertOne({
+	_id: article_id,
+	title: "An extensive study of C-SMOTE, a Continuous Synthetic Minority Oversampling Technique for Evolving Data Streams",
+	authors:
+	[
+		{id:author1_id, org:"Politecnico di Milano"},
+		{id:author2_id, org:"Politecnico di Milano"}
+	],
+	n_citation: 3,
+	abstract: "Streaming Machine Learning (SML) studies algorithms that update their models, given an unbounded and often non-stationary flow of data performing a single pass. Online class imbalance learning is a branch of SML that combines the challenges of both class imbalance and concept drift. In this paper, we investigate the binary classification problem by rebalancing an imbalanced stream of data in the presence of concept drift, accessing one sample at a time.",
+	doi: "10.1016/j.eswa.2022.116630",
+	keywords: ["Evolving Data Stream","Streaming","Concept drift","Balancing"],
+	page_start: 39,
+	page_end: 46,
+	year: 2022,
+	fos: ["Computer Science","Stream Reasoning","Big Data"],
+	venue: {
+		raw: "ESA",
+		type: 1,
+		volume: 196,
+		publisher: "Elsevier"
+	},
+	chapters:
+	[
+		{
+		title:"1. Introduction",
+		text:"Nowadays, data abound as a multitude of smart devices, such as smartphones, wearables, computers, and Internet of Things (IoT) sensors produce massive, continuous, and unbounded flows of data, namely data streams. This poses several challenges to Machine Learning (ML)."
+		},
+
+		{
+		title:"2. Background",
+		text:"This section is divided into three parts describing the different concept drift types and characteristics, the evaluation metrics, and the most common approaches to use in class imbalance.",
+		subsection: [
+			{
+			title:"2.1. Concept drift in evolving data streams",
+			text:"In this part, we introduce the concept drift phenomenon explaining why and how it happens. We explain all its different types, forms, and possible speeds of occurrence.",
+			subsubsection: [
+				{
+				title:"2.1.1. Concept drift types",
+				text:"Since the generating function is unknown, concept drift is unpredictable. In the batch settings, with all the data available, it is simple to check	and detect if a dataset is not stationary.",
+				images:
+					[
+					{ caption:"Fig.1 Representation of the three different types of concept drift",
+					url:"https://ars.els-cdn.com/content/image/1-s2.0-S0957417422001208-gr1.jpg"
+					}
+					]
+				}
+			]
+			}
+		]
+		},
+
+		{
+		title:"3. C-SMOTE",
+		text:"This section recalls the description of C-SMOTE, inspired by the Smote technique, originally presented in Bernardo, Gomes et al. (2020). C-SMOTE is designed to rebalance an imbalanced data stream, and it can be pipelined with any SML- model. C-SMOTE stands for Continuous-Smote, meaning that the new Smote version is applied continuously.",
+		images:[
+			{
+			caption:"Fig. 2. Architecture of C-SMOTE meta-strategy pipelined with an Online Learner.",
+			url: "https://ars.els-cdn.com/content/image/1-s2.0-S0957417422001208-gr5.jpg"
+			}
+		],
+		subsection:[
+			{
+			title:"3.1. Artificial data streams",
+			text: "To synthetically reproduce the different types of concept drifts shown in Section 2.1, we choose two of the most commonly used artificial data generators: SINE1 (Gama et al., 2004) and SEA (Street & Kim, 2001)."
+			}
+		]
+
+		}
+		],
+	references: [
+		article_ref1,
+		article_ref2
 	]
-])
+
+})
 \end{lstlisting}
 
 
+\subsection{Insert an author in the system}
+Assuming he is not present in the dataset, we used \verb |insertOne| to create a new instance of \emph{Author}.\newline
+\textbf{Note:} \verb |author1_id| and \verb|article_id|, refers to the variables instantiated in the previous
+command (Section: ~\ref{pub_insert})
+\begin{lstlisting}
+db.authors.insertOne({
+	_id: author1_id,
+	name: "Emanuele Della Valle",
+	orcid: "0000-0002-5176-5885",
+	articles:[
+		article_id
+	],
+	bio:"Emanuele Della Valle holds a PhD in Computer Science from the Vrije Universiteit Amsterdam and a Master degree in Computer Science and Engineering from Politecnico di Milano. He is associate professor at the Department of Electronics, Information and Bioengineering of the Politecnico di Milano.",
+	email:"emanuele.dellavalle@gmail.com",
+	nationality:"it",
+	dob:ISODate("1975-03-07T00:00:00.000Z")
+})
+\end{lstlisting}
 
+\subsection{Update the number of citations of referenced publications}
+With the following snippet of code is possible to increment the \verb |n_citations| field of the \emph{Publications}
+referenced by the article created in section ~\ref{pub_insert}.\newline
+\textbf{Note:} in this command we used \verb |updateMany| in order to update both the referenced publications; \verb |update|
+wasn't enough because updates only the first instance corresponding to the requirements
+\begin{lstlisting}
+db.articles.updateMany(
+	{ $or:[{_id:{$eq:ObjectId("53e99fe4b7602d97028bf743")}}, {_id:{$eq:ObjectId("53e99fddb7602d97028bc085")}}]},
+	{ $inc: { n_citation: 1} }
+)
+\end{lstlisting}
+
+\subsection{Modification of the biography of an author}
+This command allows to access \emph{Authors} by field \verb |name| and to append a string to field \verb |bio|
+\begin{lstlisting}
+db.authors.updateMany(
+	{name: "Emanuele Della Valle"},
+	[{ $set: { bio: { $concat: [ "$bio", "He recently become full professot at ETH Zurich." ] } } }]
+)
+\end{lstlisting}
+
+\subsection{Add a publication to its author}
+This command allows to add the new publication (\emph{Publication} creation presented in section ~\ref{pub_insert}), to
+one of its \emph{Authors}. \newline
+\textbf{Note:} we assumed \verb |newArticleId| as the identifier of the new publication and that \verb |author1_id|
+refers to the variable instantiated in section ~\ref{pub_insert}
+\begin{lstlisting}
+newArticleId = ObjectId()
+
+db.authors.updateOne(
+	{ _id:author1_id },
+	{ $push:{articles:newArticleId}}
+)
+\end{lstlisting}
+
+
+\section{Queries}
+We have identified the following queries in order to show the system's basic functionalities.
+
+\subsection{Query 1}
+This query returns one publication written after 2013 whose \verb |fos-FieldOfStudy| contains \emph{'Machine learning'}.
+\begin{lstlisting}
+db.articles.findOne({
+	"$and": [{year: {$gte:2013}}, {fos: {$regex: "Machine learning"}}]
+})
+\end{lstlisting}
+
+\subsection{Query 2}
+This query returns all the Italian authors born after 1960.
+\begin{lstlisting}
+db.authors.find({
+	$and:[{nationality:'it'},{dob:{$gte:ISODate("1960-01-01")}}]
+})
+\end{lstlisting}
+
+\subsection{Query 3}
+This query returns ten of the articles published by \emph{'Elsevier'}.
+\begin{lstlisting}
+db.articles.find({
+	$and:[{"venue.publisher":'Elsevier'},{year:{$gte:2009}}]
+}).limit(10)
+\end{lstlisting}
+
+\subsection{Query 4}
+This query returns the top three years sorted by number of publications.
+\begin{lstlisting}
+db.articles.aggregate([
+	{"$group" : {_id:"$year", count:{$sum:1}}},
+	{"$sort": {count:-1}},
+	{"$limit": 3}
+]);
+\end{lstlisting}
+
+\subsection{Query 5}
+This query finds all the articles with at least one Stanford affiliation and regarding \emph{'Machine learning'} field
+of study.
+\begin{lstlisting}
+db.articles.aggregate([
+	{$match: {"authors.org":{$regex: "Stanford"}}},
+	{$match: {"fos":"Machine learning"}}
+])
+\end{lstlisting}
+
+\subsection{Query 6}
+This query returns the top three years sorted by number of distinct authors.
+\begin{lstlisting}
+db.articles.aggregate([
+	{$unwind: "$authors"},
+	{$group: {"_id":{ "year":"$year", "author":"$authors.id"}}},
+	{$group: {"_id": "$_id.year", "count": { $sum: 1 }}},
+	{$sort : {"count" : -1}},
+	{$limit : 3 }
+]);
+\end{lstlisting}
+
+\subsection{Query 7}
+This query returns the most frequent \verb |keywords|.
+\begin{lstlisting}
+db.articles.aggregate([
+	{$unwind: "$keywords" },
+	{
+		$group: {
+			_id: {$toLower: '$keywords'},
+			count: {$sum: 1}
+		}
+	},
+	{$sort : { count : -1}},
+	{$limit : 20}
+]);
+\end{lstlisting}
+
+\subsection{Query 8}
+This query, given the title of an article, returns the chapter with the higher number of images.
+\begin{lstlisting}
+db.articles.aggregate([
+	{"$match" : {title: "Locality Sensitive Outlier Detection: A ranking driven approach"}},
+	{"$unwind" : {path: "$chapters"}},
+	{"$project": {
+		"title":1,
+		"chapters":1,
+		"imgCount": { "$size": "$chapters.images" } } },
+	{"$sort": {imgCount:-1}},
+	{"$limit": 1}
+]);
+\end{lstlisting}
+
+\subsection{Query 9}
+This query returns articles citing another article that contains, between its \verb |references|, at least one
+article written at \emph{'Politecnico di Milano'}. \newline
+\textbf{Note:} we used the operator \verb |lookup| to issue a join, in order to access another article instance.
+\begin{lstlisting}
+db.articles.aggregate([
+	{$lookup: {
+		from: "articles",
+		localField: "references",
+		foreignField: "_id",
+		as: "refs"
+		}
+	},
+	{$match: {
+		"refs.authors.org":{$regex: "Milan"}
+		}
+	},
+	{"$project": {
+		"title":1,
+		"refs.title":1,
+		"refs.authors": 1
+		}
+	}
+])
+\end{lstlisting}
+
+\subsection{Query 10}
+This query finds the author with the maximum amount of written articles and retrieves his article with the highest number
+of \verb |coauthors|.
+\textbf{Note:} we used the operator \verb |lookup| to issue a join in order to access articles referenced by the author.
+\begin{lstlisting}
+db.authors.aggregate([
+	{"$project": {
+		"_id":1,
+		"name":1,
+		"articles":1,
+		"artCount": { "$size": "$articles" } } },
+	{$sort : {"artCount": -1}},
+	{$limit :1 },
+	{$lookup: {
+		from: "articles",
+		localField: "articles",
+		foreignField: "_id",
+		as: "articles_doc"}},
+	{"$project": {
+		"name":1,
+		"articles_doc":1,
+		"authCount": { "$size": "$articles_doc.authors"}}},
+	{$sort : { "authCount": -1}},
+	{$limit : 1},
+	{"$project": {
+		"name":1,
+		"articles_doc.title":1,
+		"authCount": 1}}
+])
+\end{lstlisting}
 
 \end{document}
