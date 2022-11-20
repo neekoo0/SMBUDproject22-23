@@ -177,12 +177,19 @@ In this chapter will be presented the problem specification and the hypothesis u
 
 \section{Problem Specification}
 This project aims to build a documental database that handles scientific articles contained in the DBLP bibliography.
-The focus is on creating a database which allows efficient information retrieval from the publications citation network.
-The main collections analyzed in the project are \emph{Author} and \emph{Publication} with all their attributes and related
-objects like: \emph{Venue, FieldOfStudy, Chapter} and \emph{Image}.
+The focus is on creating a database which allows efficient information retrieval of the articles, including
+their chapters and images.
+The main collections analyzed in the project are \emph{Authors} and \emph{Publication} with all their attributes and related
+objects like: \emph{chapters, biographies} and \emph{images}.
 
 \section{Assumptions}
-
+\label{sec:assumptions}
+\begin{enumerate}
+\item Articles can be published on a single venue
+\item There is no distinction between different types of Publication
+\item An author can't work for more than one organization for the same Publication
+\item A chapter can contain subsections and these will be considered chapters as well
+\end{enumerate}
 
 \chapter{ER Diagram}
 \label{ch:erd}
@@ -234,6 +241,18 @@ The ER diagram designed contains also the following relationships:
 
 \chapter{Sample Dataset}
 \label{ch:sample_dataset}
+
+\chapter{Document structure}
+\label{ch:document_structure}
+In this section we will describe the structure of our database. We decided to split our dataset in two collections:
+\emph{authors} and \emph{articles}. The reason behind this choice was to increase the performance and to reduce the
+spatial complexity. For example if we need to modify the email of an author we just have to change the field in the
+\emph{author} collection. Whereas, if we just kept one collection, very expensive update query would have been needed
+(change the modified field in each author's sub-document of the entire article collection TODO).
+
+Furthermore, to avoid redundancies we used manual references to bind the two collections.
+
+
 
 
 \chapter{Commands and Queries}
