@@ -521,7 +521,7 @@ Publication represent the central concept of the system and contains:
 \subsection{Author}
 The dataset provides the following author fields:
 \begin{itemize}
-\item \textbf{\_id} is an alphanumeric string that was used during the merge operation.
+\item \textbf{\_id} is an ObjectId that identifies an author.
 \item \textbf{name} is the name of the author.
 \item \textbf{articles} is a set of articles identifier of the publications of this author.
 \item \textbf{orcid} Open Researcher and Contributor ID is a unique identifier for authors of scientific articles.
@@ -541,8 +541,8 @@ We have identified the following \verb |INSERT| and \verb |UPDATE| commands to s
 \label{pub_insert}
 Assuming it is not present in the dataset, we inserted a new document that is a new instance of \emph{Publication}.
 In order to do that we instantiated 5 different variables: \verb |article_id| that generates an ObjectId representing
-the id of the article we're creating, \verb |article_ref1| and \verb |artcle_ref2| that are the ids of two scientific
-articles cited by this publication, \verb |author1_id| and \verb |author2_id| that are the ids of the authors\newline
+the id of the article we're creating; \verb |article_ref1| and \verb |article_ref2| that are the ids of two scientific
+articles cited by this publication; \verb |author1_id| and \verb |author2_id| that are the ids of the authors.\newline
 \textbf{Note:} \verb |isbn| field is missing \newline
 \textbf{Note:} \verb |type| = 1 represents a \emph{Journal} \newline
 \textbf{Note:} \verb |issue| field is missing
@@ -655,7 +655,7 @@ db.authors.insertOne({
 With the following snippet of code is possible to increment the \verb |n_citations| field of the \emph{Publications}
 referenced by the article created in section ~\ref{pub_insert}.\newline
 \textbf{Note:} in this command we used \verb |updateMany| in order to update both the referenced publications; \verb |update|
-wasn't enough because updates only the first instance corresponding to the requirements
+wasn't enough because updates only the first instance corresponding to the requirements\\
 \begin{lstlisting}
 db.articles.updateMany(
 	{ $or:[{_id:{$eq:ObjectId("53e99fe4b7602d97028bf743")}}, {_id:{$eq:ObjectId("53e99fddb7602d97028bc085")}}]},
@@ -664,7 +664,7 @@ db.articles.updateMany(
 \end{lstlisting}
 
 \subsection{Modification of the biography of an author}
-This command allows to access \emph{Authors} by field \verb |name| and to append a string to field \verb |bio|
+This command allows to access \emph{Authors} by field \verb |name| in order to append a string to field \verb |bio|
 \begin{lstlisting}
 db.authors.updateMany(
 	{name: "Emanuele Della Valle"},
@@ -689,15 +689,22 @@ db.authors.updateOne(
 
 \newpage
 \section{Queries}
-We have identified the following queries in order to show the system's basic functionalities.
+We have identified the following queries in order to show the system's basic functionalities.\newline
+For ease of read reasons, we decided to show results obtained using \verb |project| operator, and, in some cases,
+we showed only some of the results.
 
 \subsection{Query 1}
-This query returns one publication written after 2013 whose \verb |fos-FieldOfStudy| contains \emph{'Machine learning'}.
+This query returns one publication written after 2013 whose \verb |FieldOfStudy(fos)| contains \emph{'Machine learning'}.
 \begin{lstlisting}
 db.articles.findOne({
 	"$and": [{year: {$gte:2013}}, {fos: {$regex: "Machine learning"}}]
 })
 \end{lstlisting}
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{query/mongo_q1.PNG}
+\label{fig:query1}
+\end{figure}
 
 \subsection{Query 2}
 This query returns all the Italian authors born after 1960.
@@ -706,14 +713,24 @@ db.authors.find({
 	$and:[{nationality:'it'},{dob:{$gte:ISODate("1960-01-01")}}]
 })
 \end{lstlisting}
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{query/mongo_q2.PNG}
+\label{fig:query2}
+\end{figure}
 
 \subsection{Query 3}
-This query returns ten of the articles published by \emph{'Elsevier'}.
+This query returns ten of the articles published by \emph{'Elsevier'} after 2009.
 \begin{lstlisting}
 db.articles.find({
 	$and:[{"venue.publisher":'Elsevier'},{year:{$gte:2009}}]
 }).limit(10)
 \end{lstlisting}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{query/mongo_q3.PNG}
+\label{fig:query3}
+\end{figure}
 
 \subsection{Query 4}
 This query returns the top three years sorted by number of publications.
@@ -724,6 +741,11 @@ db.articles.aggregate([
 	{"$limit": 3}
 ]);
 \end{lstlisting}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{query/mongo_q4.PNG}
+\label{fig:query4}
+\end{figure}
 
 \subsection{Query 5}
 This query finds all the articles with at least one Stanford affiliation and regarding \emph{'Machine learning'} field
@@ -734,6 +756,11 @@ db.articles.aggregate([
 	{$match: {"fos":"Machine learning"}}
 ])
 \end{lstlisting}
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{query/mongo_q5.PNG}
+\label{fig:query5}
+\end{figure}
 
 \subsection{Query 6}
 This query returns the top three years sorted by number of distinct authors.
@@ -746,9 +773,14 @@ db.articles.aggregate([
 	{$limit : 3 }
 ]);
 \end{lstlisting}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{query/mongo_q6.PNG}
+\label{fig:query6}
+\end{figure}
 
 \subsection{Query 7}
-This query returns the most frequent \verb |keywords|.
+This query returns the 20 most frequent \verb |keywords|.
 \begin{lstlisting}
 db.articles.aggregate([
 	{$unwind: "$keywords" },
@@ -762,6 +794,11 @@ db.articles.aggregate([
 	{$limit : 20}
 ]);
 \end{lstlisting}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{query/mongo_q7.PNG}
+\label{fig:query7}
+\end{figure}
 
 \subsection{Query 8}
 This query, given the title of an article, returns the chapter with the higher number of images.
@@ -777,10 +814,15 @@ db.articles.aggregate([
 	{"$limit": 1}
 ]);
 \end{lstlisting}
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{query/mongo_q8.PNG}
+\label{fig:query8}
+\end{figure}
 
 \subsection{Query 9}
 This query returns articles citing another article that contains, between its \verb |references|, at least one
-article written at \emph{'Politecnico di Milano'}. \newline
+article written at in a Milan University. \newline
 \textbf{Note:} we used the operator \verb |lookup| to issue a join, in order to access another article instance.
 \begin{lstlisting}
 db.articles.aggregate([
@@ -803,10 +845,15 @@ db.articles.aggregate([
 	}
 ])
 \end{lstlisting}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{query/mongo_q9.PNG}
+\label{fig:query9}
+\end{figure}
 
 \subsection{Query 10}
 This query finds the author with the maximum amount of written articles and retrieves his article with the highest number
-of \verb |coauthors|.
+of \verb |coauthors|.\newline
 \textbf{Note:} we used the operator \verb |lookup| to issue a join in order to access articles referenced by the author.
 \begin{lstlisting}
 db.authors.aggregate([
@@ -834,9 +881,14 @@ db.authors.aggregate([
 		"authCount": 1}}
 ])
 \end{lstlisting}
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{query/mongo_q10.PNG}
+\label{fig:query10}
+\end{figure}
 
 \subsection{Query 11}
-This query returns all the articles written by authors that combined have all 26 letters of the alphabet.
+This query returns all the articles written by authors whose names combined have all 26 letters of the alphabet.
 \begin{lstlisting}
 db.authors.aggregate([
 	{
@@ -845,7 +897,7 @@ db.authors.aggregate([
 	{
 		"$group" : {
 			_id: "$articles",
-			auhors: {
+			auth: {
 				$push: {
 					$concat: ["$name"]
 				}
@@ -855,10 +907,10 @@ db.authors.aggregate([
 	{
 		$project: {
 			"_id": 1,
-			"auhors": "$auhors",
+			"auth": "$auth",
 			"fullNames": {
 				$reduce: {
-					input: "$auhors",
+					input: "$auth",
 					initialValue: "",
 					in: { $toLower: {$concat : ["$$value", "$$this"]}}
 				}
@@ -901,7 +953,7 @@ db.authors.aggregate([
 		$group: {
 			_id: {
 				"_id": '$_id',
-				auhors: "$auhors"
+				auth: "$auth"
 			},
 			letters: { $addToSet: '$letters' },
 		}
@@ -909,7 +961,7 @@ db.authors.aggregate([
 	{
 		$project: {
 			"_id" : 1,
-			"auhors": "$auhors",
+			"auth": "$auth",
 			"differentLetters": {
 				"$size": "$letters"
 			}
@@ -928,11 +980,16 @@ db.authors.aggregate([
 	{
 		$project: {
 			"articles_doc.title" : 1,
-			"auhors": 1,
+			"auth": 1,
 		}
 	}
 ])
 \end{lstlisting}
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{query/mongo_q11.PNG}
+\label{fig:query11}
+\end{figure}
 
 
 \chapter{Conclusions}
