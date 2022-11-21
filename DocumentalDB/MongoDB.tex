@@ -280,7 +280,8 @@ In the authors' collection the bio attribute was randomly generated only when no
 
 \section{Article structure}
 In the following \verb |JSON| file we can see how the \emph{Article} is structured in our dataset.\newline
-\textbf{Note:} in some fields we decided not to insert all the content only for ease of read reasons
+\textbf{Note:} in some fields we decided not to insert all the content only for ease of read reasons.\newline
+\textbf{Note:} in \verb |venue|, fields \verb |issue|, \verb |volume| and \verb |publisher| are missing because they are empty in this example.
 \begin{lstlisting}
 {
 	"_id": {
@@ -329,9 +330,6 @@ In the following \verb |JSON| file we can see how the \emph{Article} is structur
 	"venue": {
 		"raw": "ICDE",
 		"type": 0,
-		"volume": "",
-		"issue": "",
-		"publisher": null
 	},
 	"chapters": [
 		{
@@ -369,11 +367,11 @@ In the following \verb |JSON| file we can see how the \emph{Article} is structur
 			"text": "21 Organization of Our Runtime\nThe target cluster architecture...",
 			"images": [
 				{
-				"caption": "FR - The King Of New York",
+				"caption": "The King Of New York",
 				"link": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/OxtxltJK6N2aNMb6x4shSdiFwY.jpg"
 				},
 				{
-				"caption": "The Ghost Who Walks  (SUB)",
+				"caption": "The Ghost Who Walks",
 				"link": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/nCJq5mzrzuekS2g0BLc3Q2aYMIQ.jpg"
 				},
 				{
@@ -437,11 +435,11 @@ In the following \verb |JSON| file we can see how the \emph{Article} is structur
 				"link": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/rqv5avsa3BWWREP84BH5iU8mta.jpg"
 				},
 				{
-				"caption": "FR - Le Grand Bazar",
+				"caption": "Le Grand Bazar",
 				"link": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/oNABCS3tOQBprfJqhYU1nUbcGkX.jpg"
 				},
 				{
-				"caption": "FR - Gangsters",
+				"caption": "Gangsters",
 				"link": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/tCaU7Hl9d7Ey3X9OokZoPsq7WfO.jpg"
 				},
 				{
@@ -464,21 +462,72 @@ In the following \verb |JSON| file we can see how the \emph{Author} is structure
 \begin{lstlisting}
 {
 	"_id": {
-		"$oid": "542a4c9fdabfae61d496694e"
+		"$oid": "53f45775dabfaee4dc8162e6"
 	},
-	"name": "Ye Wang",
+	"name": "Guillermo Jorge-Botana",
 	"articles": [
 		{
-			"$oid": "53e99f86b7602d9702859fdf"
+			"$oid": "53e99f86b7602d970285a187"
 		}
 	],
-	"orcid": null,
-	"bio": "Marcus J. Nadenau (M'96) was born in Germany in 1971. He received the M.S. degree in electrical engineering from the University of Technology, Aachen, Germany, in 1997. In 1997, he joined the Signal Processing Laboratory, Swiss Federal Institute of Technology, Lausanne, Switzerland, where he is currently pursuing the Ph.D. degree.\n\nHis research interests include image compression, color, and human vision.",
-	"email": "Ye.Wang@gmail.com",
-	"nationality": "dk",
-	"dob": "1961-7-2"
+	"orcid": "0000-0001-5879-6783",
+	"bio": "Qing-Long Han received the B.Sc. degree in mathematics from the...",
+	"email": "Guillermo.Jorge-Botana@yahoo.com",
+	"nationality": "de",
+	"dob": 1974-09-14T00:00:00.000+00:00
 }
 \end{lstlisting}
+
+\newpage
+\section{Attributes Description}
+In this section we will present all the attributes contained in the our filtered dataset.
+
+\subsection{Publication}
+Publication represent the central concept of the system and contains:
+\begin{itemize}
+\item \textbf{\_id} is an alphanumeric string that was used during the merge operation.
+\item \textbf{title} represents the title of the publication.
+\item \textbf{authors} is a set of authors identifier (that wrote the article) matched with the \verb |org| field.
+\item \textbf{n\_citation} is the number of times that this publication has been mentioned.
+\item \textbf{abstract} is a string containing a brief summary of the contents of the paper.
+\item \textbf{doi} Digital Object Identifier is a persistent and standardized identifier.
+\item \textbf{keywords} is a set containing keywords of the publication.
+\item \textbf{isbn} is an identification code of the venue of the publication.
+\item \textbf{page\_start} defines the starting page of the publication.
+\item \textbf{page\_end} defines the last page of the publication.
+\item \textbf{year} represents the year of publication.
+\item \textbf{fos} is a set containing the fields of study of the publication.
+\item \textbf{venue} represents where a publication is published or presented. This field contains:
+				\begin{itemize}
+					\item \textbf{raw} is the name or the abbreviation of the venue (regardless the year, issue or volume) in which the
+						publication was presented.
+					\item \textbf{type} indicates the type of the publication.
+					\item \textbf{volume} is the volume of the venue in which the article has been published.
+					\item \textbf{issue} refers to how many times a periodical has been published during that year.
+					\item \textbf{publisher} is the name of the publisher of the article.
+				\end{itemize}
+\item \textbf{chapters} is a list of objects containing \verb |title| (title of the chapter), \verb |text| (the content),
+	the \verb |sections| (that has the same structure of a chapter). They also contains \verb |images| composed by:
+				\begin{itemize}
+					\item \textbf{caption} the caption of the image.
+					\item \textbf{link} the link to the image.
+				\end{itemize}
+\item \textbf{references} is a set of ids representing the publications mentioned.
+\end{itemize}
+\bigskip
+
+\subsection{Author}
+The dataset provides the following author fields:
+\begin{itemize}
+\item \textbf{\_id} is an alphanumeric string that was used during the merge operation.
+\item \textbf{name} is the name of the author.
+\item \textbf{articles} is a set of articles identifier of the publications of this author.
+\item \textbf{orcid} Open Researcher and Contributor ID is a unique identifier for authors of scientific articles.
+\item \textbf{bio} is a string that describes the author.
+\item \textbf{email} is the email address of the author.
+\item \textbf{nationality} is the nationality of the author.
+\item \textbf{dob} is the birth date of the author.
+\end{itemize}
 
 
 \chapter{Commands and Queries}
