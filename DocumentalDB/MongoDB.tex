@@ -244,7 +244,7 @@ In this section we will describe the structure of our database. We decided to sp
 \emph{authors} and \emph{articles}. The reason behind this choice was to increase the performance and to reduce the
 spatial complexity. For example if we need to modify the email of an author we just have to change the field in the
 \emph{author} collection. Whereas, if we just kept one collection, very expensive update query would have been needed
-(change the modified field in each author's sub-document of the entire article collection TODO).
+(change the modified field in each author's sub-document of the entire article collection).
 
 Furthermore, to avoid redundancies we used manual references to bind the two collections.
 
@@ -459,6 +459,7 @@ In the following \verb |JSON| file we can see how the \emph{Article} is structur
 
 \section{Author structure}
 In the following \verb |JSON| file we can see how the \emph{Author} is structured in our dataset.\newline
+\textbf{Note:} in some fields we decided not to insert all the content only for ease of read reasons.
 \begin{lstlisting}
 {
 	"_id": {
@@ -480,23 +481,24 @@ In the following \verb |JSON| file we can see how the \emph{Author} is structure
 
 \newpage
 \section{Attributes Description}
-In this section we will present all the attributes contained in the our filtered dataset.
+In this section we will present all the attributes contained in our filtered dataset.
 
-\subsection{Publication}
+\subsection{Article}
 Publication represent the central concept of the system and contains:
 \begin{itemize}
-\item \textbf{\_id} is an alphanumeric string that was used during the merge operation.
+\item \textbf{\_id} is an ObjectId that identifies a publication.
 \item \textbf{title} represents the title of the publication.
-\item \textbf{authors} is a set of authors identifier (that wrote the article) matched with the \verb |org| field.
+\item \textbf{authors} is a an array of ObjectId of the authors of the article and the \verb |org| field which represent
+	the affiliation.
 \item \textbf{n\_citation} is the number of times that this publication has been mentioned.
 \item \textbf{abstract} is a string containing a brief summary of the contents of the paper.
 \item \textbf{doi} Digital Object Identifier is a persistent and standardized identifier.
-\item \textbf{keywords} is a set containing keywords of the publication.
+\item \textbf{keywords} is an array containing keywords of the publication.
 \item \textbf{isbn} is an identification code of the venue of the publication.
 \item \textbf{page\_start} defines the starting page of the publication.
 \item \textbf{page\_end} defines the last page of the publication.
 \item \textbf{year} represents the year of publication.
-\item \textbf{fos} is a set containing the fields of study of the publication.
+\item \textbf{fos} is an array containing the fields of study of the publication.
 \item \textbf{venue} represents where a publication is published or presented. This field contains:
 				\begin{itemize}
 					\item \textbf{raw} is the name or the abbreviation of the venue (regardless the year, issue or volume) in which the
@@ -507,7 +509,7 @@ Publication represent the central concept of the system and contains:
 					\item \textbf{publisher} is the name of the publisher of the article.
 				\end{itemize}
 \item \textbf{chapters} is a list of objects containing \verb |title| (title of the chapter), \verb |text| (the content),
-	the \verb |sections| (that has the same structure of a chapter). They also contains \verb |images| composed by:
+	 \verb |sections| (that has the same structure of a chapter). They also contains \verb |images| composed by:
 				\begin{itemize}
 					\item \textbf{caption} the caption of the image.
 					\item \textbf{link} the link to the image.
