@@ -822,7 +822,7 @@ db.articles.aggregate([
 
 \subsection{Query 9}
 This query returns articles citing another article that contains, between its \verb |references|, at least one
-article written at in a Milan University. \newline
+article written in a Milan University. \newline
 \textbf{Note:} we used the operator \verb |lookup| to issue a join, in order to access another article instance.
 \begin{lstlisting}
 db.articles.aggregate([
@@ -894,6 +894,7 @@ db.authors.aggregate([
 	{
 		"$unwind" : {path: "$articles"}
 	},
+	{ "$sort" : { "name": 1 } },
 	{
 		"$group" : {
 			_id: "$articles",
@@ -979,15 +980,17 @@ db.authors.aggregate([
 	},
 	{
 		$project: {
-			"articles_doc.title" : 1,
-			"auth": 1,
+			"_id": "$_id._id",
+			"title": "$articles_doc.title",
+			"authors": "$_id.authors",
+			"differentLetters": "$differentLetters"
 		}
 	}
 ])
 \end{lstlisting}
 \begin{figure}[H]
 \centering
-\includegraphics[width=1\textwidth]{query/mongo_q11.PNG}
+\includegraphics[width=0.7\textwidth]{query/mongo_q11.jpeg}
 \label{fig:query11}
 \end{figure}
 

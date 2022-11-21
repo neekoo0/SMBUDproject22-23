@@ -13,7 +13,6 @@
 *.iml
 Project.pdf
 Project(1).pdf
-MongoDB.pdf
 
 # local env files
 .env.local
