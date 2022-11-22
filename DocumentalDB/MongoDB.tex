@@ -226,7 +226,7 @@ The ER diagram designed contains also the following relationships:
 \begin{itemize}
 	\item \textbf{Mentions:} is the relationship between a \emph{publication} and another \emph{publication} cited by the first one
 	\item \textbf{Published\_on:} is the relationship between a \emph{publication} and its \emph{venue}
-	\item \textbf{Writes:} is the relationship between \emph{author} and \emph{publication} which features the affiliation property
+	\item \textbf{Writes:} is the relationship between \emph{author} and \emph{publication} which features the affiliation property.
 		We decided to design it with \verb |affiliation| as an attribute of the relationship, due to the fact that it belongs
 		only to a pair of \emph{author} and \emph{publication} and it represents the institute where the author worked for the publication
 	\item \textbf{Regards:} is the relationship between a \emph{publication} and its \emph{fields of study}
@@ -273,7 +273,7 @@ array of references with the list of the referenced \verb |_id| inside every art
 To better exploit this opportunity we believe it was handy to have the 2 collections of articles and authors, so we
 performed \verb |JSON| parsing of the dump to generate 2 new \verb |JSON| files:
 \begin{itemize}
-	\item one that contains the articles, with only an array of authors that has inside the references to their \verb |_id| objectId
+	\item one that contains the articles, with an array of authors that has inside the references to their \verb |_id| objectId
 	\item the other contains the authors with an array of articles that has inside the references to their \verb |_id| objectId.
 \end{itemize}
 In the authors' collection the bio attribute was randomly generated only when not available, while \verb |email|, \verb |nationality| and
@@ -497,9 +497,9 @@ Publication represent the central concept of the system and contains:
 \begin{itemize}
 \item \textbf{\_id} is an ObjectId that identifies a publication.
 \item \textbf{title} represents the title of the publication.
-\item \textbf{authors} is a an array of ObjectId of the authors of the article and the \verb |org| field which represent
-	the affiliation.
-\item \textbf{n\_citation} is the number of times that this publication has been mentioned.
+\item \textbf{authors} is an array of subdocuments that contains: ObjectId of the authors of the article and the \verb |org|
+	field which represent the affiliation.
+\item \textbf{n\_citation} is the number of times that the publication has been mentioned.
 \item \textbf{abstract} is a string containing a brief summary of the contents of the paper.
 \item \textbf{doi} Digital Object Identifier is a persistent and standardized identifier.
 \item \textbf{keywords} is an array containing keywords of the publication.
@@ -508,7 +508,7 @@ Publication represent the central concept of the system and contains:
 \item \textbf{page\_end} defines the last page of the publication.
 \item \textbf{year} represents the year of publication.
 \item \textbf{fos} is an array containing the fields of study of the publication.
-\item \textbf{venue} represents where a publication is published or presented. This field contains:
+\item \textbf{venue} is a sub-document that represents where a publication is published or presented. This field contains:
 				\begin{itemize}
 					\item \textbf{raw} is the name or the abbreviation of the venue (regardless the year, issue or volume) in which the
 						publication was presented.
@@ -517,13 +517,13 @@ Publication represent the central concept of the system and contains:
 					\item \textbf{issue} refers to how many times a periodical has been published during that year.
 					\item \textbf{publisher} is the name of the publisher of the article.
 				\end{itemize}
-\item \textbf{chapters} is a list of objects containing \verb |title| (title of the chapter), \verb |text| (the content),
+\item \textbf{chapters} is an array of sub-documents containing containing \verb |title| (title of the chapter), \verb |text| (the content),
 	 \verb |sections| (that has the same structure of a chapter). They also contains \verb |images| composed by:
 				\begin{itemize}
 					\item \textbf{caption} the caption of the image.
 					\item \textbf{link} the link to the image.
 				\end{itemize}
-\item \textbf{references} is a set of ids representing the publications mentioned.
+\item \textbf{references} set of ObjectIds of the referenced articles.
 \end{itemize}
 \bigskip
 
@@ -532,7 +532,7 @@ The dataset provides the following author fields:
 \begin{itemize}
 \item \textbf{\_id} is an ObjectId that identifies an author.
 \item \textbf{name} is the name of the author.
-\item \textbf{articles} is a set of articles identifier of the publications of this author.
+\item \textbf{articles} is a set of articles identifier of the publications of the author.
 \item \textbf{orcid} Open Researcher and Contributor ID is a unique identifier for authors of scientific articles.
 \item \textbf{bio} is a string that describes the author.
 \item \textbf{email} is the email address of the author.
@@ -665,7 +665,7 @@ db.authors.insertOne({
 With the following snippet of code is possible to increment the \verb |n_citations| field of the \emph{Publications}
 referenced by the article created in section ~\ref{pub_insert}.\newline
 \textbf{Note:} in this command we used \verb |updateMany| in order to update both the referenced publications; \verb |update|
-wasn't enough because updates only the first instance corresponding to the requirements\\
+wasn't enough because only one of the two matching document would have been updated\\
 \begin{lstlisting}
 db.articles.updateMany(
 	{ $or:[{_id:{$eq:ObjectId("53e99fe4b7602d97028bf743")}}, {_id:{$eq:ObjectId("53e99fddb7602d97028bc085")}}]},
@@ -826,7 +826,7 @@ db.articles.aggregate([
 \end{figure}
 
 \subsection{Query 8}
-This query, given the title of an article, returns the chapter with the higher number of images.\newline
+This query, given the title of an article, returns the chapter with the highest number of images.\newline
 \textbf{Description:} the first stage matches the article given the title. Then an unwind of the chapters array is
 performed. The project stage is used to compute the variable \verb|imgCount| which stores the number of images
 contained in each chapter. The results are sorted by descending order and limited to top 1.
@@ -887,11 +887,11 @@ db.articles.aggregate([
 This query finds the author with the maximum amount of written articles and retrieves his article with the highest number
 of \verb |coauthors|.\newline
 \textbf{Description:} First of all, we compute the \verb |artCount| field which contains the length of the articles array field.
-Then we sort in descending order and keep only first author by \verb |artCount|. After that, a join is performed to load the
+Then we sort in descending order and keep only the first author by \verb |artCount|. After that, a join is performed to load the
 articles documents into the new field \verb |articles_doc|. A new projection is then used to compute the number of authors of
 each loaded article. Finally we sort the result in descending order and keep only the top 1 article. The projection is used
 to display the result in a clearer way.\newline
-\textbf{Note:} we used the operator \verb |lookup| to issue a join in order to access articles referenced by the author.
+\textbf{Note:} we used the operator \verb |lookup| to issue a join in order to access articles of the author.
 \begin{lstlisting}
 db.authors.aggregate([
 	{"$project": {
