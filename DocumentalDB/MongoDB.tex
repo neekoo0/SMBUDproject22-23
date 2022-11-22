@@ -262,9 +262,10 @@ to exploit better mongoDB functionalities. \newline
 Missing \verb |isbn|, \verb |page_start|, \verb |page_end| attributes were added with random generations.\newline
 Most important, chapters were added from the original paper pdf when available, and parsing was performed by using PHP
 Library Smalot PDFParser. This library only parses the full text of the papers so the text was then divided into chapters
-using chapter titles as a reference to split thus it was possible to obtain the 2 attributes' title and text for each
-chapter. A total of 170 pdfs were parsed and that was also used as a pool to pick random chapters for papers that could
-not be parsed because their pdfs were not available as a free copy on aminers' site.\newline
+using chapter titles as a reference to split, thus it was possible to obtain the 2 attributes' title and text for each
+chapter (for the \verb |text| field, only 10 rows were taken into consideration). A total of 170 pdfs were parsed and that
+was also used as a pool to pick random chapters for papers that could not be parsed because their pdfs were not available
+as a free copy on aminers' site.\newline
 To add images and captions, a dataset of films and their covers from tmdb was used, for every chapter a random number of
 images links were added combined with movie titles used as a caption.\newline
 The advantage of aminers' dataset was the built-in \verb |_id| attribute for articles and authors and also the existence of an
@@ -284,7 +285,7 @@ In the authors' collection the bio attribute was randomly generated only when no
 		present (e.g. author that published before having 20 years old or even before being born)
 \end{itemize}
 
-
+\newpage
 \section{Article structure}
 In the following \verb |JSON| file we can see how the \emph{Article} is structured in our dataset.\newline
 \textbf{Note:} in some fields we decided not to insert all the content only for ease of read reasons.\newline
@@ -464,6 +465,7 @@ In the following \verb |JSON| file we can see how the \emph{Article} is structur
 }
 \end{lstlisting}
 
+\newpage
 \section{Author structure}
 In the following \verb |JSON| file we can see how the \emph{Author} is structured in our dataset.\newline
 \textbf{Note:} in some fields we decided not to insert all the content only for ease of read reasons.
@@ -945,7 +947,7 @@ db.authors.aggregate([
 	{
 		"$group" : {
 			_id: "$articles",
-			auth: {
+			authors: {
 				$push: {
 					$concat: ["$name"]
 				}
@@ -955,10 +957,10 @@ db.authors.aggregate([
 	{
 		$project: {
 			"_id": 1,
-			"auth": "$auth",
+			"authors": "$authors",
 			"fullNames": {
 				$reduce: {
-					input: "$auth",
+					input: "$authors",
 					initialValue: "",
 					in: { $toLower: {$concat : ["$$value", "$$this"]}}
 				}
@@ -1001,7 +1003,7 @@ db.authors.aggregate([
 		$group: {
 			_id: {
 				"_id": '$_id',
-				auth: "$auth"
+				authors: "$authors"
 			},
 			letters: { $addToSet: '$letters' },
 		}
@@ -1009,7 +1011,7 @@ db.authors.aggregate([
 	{
 		$project: {
 			"_id" : 1,
-			"auth": "$auth",
+			"authors": "$authors",
 			"differentLetters": {
 				"$size": "$letters"
 			}
