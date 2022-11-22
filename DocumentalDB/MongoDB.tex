@@ -465,7 +465,6 @@ In the following \verb |JSON| file we can see how the \emph{Article} is structur
 }
 \end{lstlisting}
 
-\newpage
 \section{Author structure}
 In the following \verb |JSON| file we can see how the \emph{Author} is structured in our dataset.\newline
 \textbf{Note:} in some fields we decided not to insert all the content only for ease of read reasons.
@@ -717,6 +716,7 @@ db.articles.findOne({
 \label{fig:query1}
 \end{figure}
 
+\newpage
 \subsection{Query 2}
 This query returns all the Italian authors born after 1960.
 \begin{lstlisting}
@@ -821,7 +821,7 @@ db.articles.aggregate([
 \end{lstlisting}
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.6\textwidth]{query/mongo_q7.PNG}
+\includegraphics[width=0.5\textwidth]{query/mongo_q7.PNG}
 \label{fig:query7}
 \end{figure}
 
@@ -1044,11 +1044,18 @@ db.authors.aggregate([
 \label{fig:query11}
 \end{figure}
 
+\subsection{Improving Queries Perfomance}
+In our queries, we decided not to use indexes because they weren't necessary to achieve a good performance score. Instead, in bigger and
+real world databases, could be helpful to create textual indexes on both the collections, in order to perform full-text search
+on some fields.
+
 
 \chapter{Conclusions}
-Documental databases, if well designed, are really flexible and intuitive, in fact queries can be very easy and compact.
-The ease of the queries was the main thing on which we based our system design and that helped us to deal with a real
-world problem.
+The documental approach turned out to be very flexible and intuitive, thanks to its affinity with the object-oriented paradigm.
+Also, this kind of technology allowed us to shape data to match the most frequent operations that could take place in the
+publication domain. Therefore, queries became very simple and efficient.\newline
+Moreover, with our implementation, we tried to reach a good trade-off between performance and spatial complexity, avoiding
+choices that could lead to critical data duplication problems.
 
 
 \end{document}
