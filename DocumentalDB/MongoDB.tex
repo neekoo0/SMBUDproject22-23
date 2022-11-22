@@ -244,9 +244,16 @@ In this section we will describe the structure of our database. We decided to sp
 \emph{authors} and \emph{articles}. The reason behind this choice was to increase the performance and to reduce the
 spatial complexity. For example if we need to modify the email of an author we just have to change the field in the
 \emph{author} collection. Whereas, if we just kept one collection, very expensive update query would have been needed
-(change the modified field in each author's sub-document of the entire article collection).
+(change the modified field in each author's sub-document of the entire article collection).\newline
 
-Furthermore, to avoid redundancies we used manual references to bind the two collections.
+Furthermore, to avoid redundancies we used manual references to bind the two collections.\newline
+
+In order to show the number of \emph{Authors} and \emph{Articles} in our collections, we performed the two following queries:
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{instancenumber.jpg}
+\label{fig:instances}
+\end{figure}
 
 
 \section{Data Preprocessing}
@@ -697,12 +704,13 @@ we showed only some of the results.
 This query returns one publication written after 2013 whose \verb |FieldOfStudy(fos)| contains \emph{'Machine learning'}.
 \begin{lstlisting}
 db.articles.findOne({
-	"$and": [{year: {$gte:2013}}, {fos: {$regex: "Machine learning"}}]
+	"$and": [{year: {$gte:2013}}, {"fos":"Machine learning"}]
 })
 \end{lstlisting}
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{query/mongo_q1.PNG}
+\caption{Projection on title, fos, year, chapters.title}
 \label{fig:query1}
 \end{figure}
 
@@ -720,7 +728,9 @@ db.authors.find({
 \end{figure}
 
 \subsection{Query 3}
-This query returns ten of the articles published by \emph{'Elsevier'} after 2009.
+This query returns ten of the articles published by \emph{'Elsevier'} after 2009.\newline
+\textbf{Description:} this query perform a filtering over the year attribute of the article and on the publisher
+field of the venue sub-document.
 \begin{lstlisting}
 db.articles.find({
 	$and:[{"venue.publisher":'Elsevier'},{year:{$gte:2009}}]
@@ -729,11 +739,14 @@ db.articles.find({
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.85\textwidth]{query/mongo_q3.PNG}
+\caption{Projection on title, fos, year, chapters.title, venue.raw, venue.publisher}
 \label{fig:query3}
 \end{figure}
 
 \subsection{Query 4}
-This query returns the top three years sorted by number of publications.
+This query returns the top three years sorted by number of publications.\newline
+\textbf{Description:} the query computes the count by aggregating with respect to the year field. Then groups
+are sorted by descending order and only the top 3 are kept.
 \begin{lstlisting}
 db.articles.aggregate([
 	{"$group" : {_id:"$year", count:{$sum:1}}},
@@ -749,7 +762,9 @@ db.articles.aggregate([
 
 \subsection{Query 5}
 This query finds all the articles with at least one Stanford affiliation and regarding \emph{'Machine learning'} field
-of study.
+of study. \newline
+\textbf{Description:} this query perform a filtering over the fos attribute of the article and on the org field of the
+authors array of sub-documents.
 \begin{lstlisting}
 db.articles.aggregate([
 	{$match: {"authors.org":{$regex: "Stanford"}}},
@@ -759,11 +774,15 @@ db.articles.aggregate([
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{query/mongo_q5.PNG}
+\caption{Projection on authors, fos and title}
 \label{fig:query5}
 \end{figure}
 
 \subsection{Query 6}
-This query returns the top three years sorted by number of distinct authors.
+This query returns the top three years sorted by number of distinct authors.\newline
+\textbf{Description:} the query starts by unwinding the authors array. Then, articles are grouped by year and by
+author. The distinct count over the year is performed grouping the previous results by year and accumulating 1 for
+each group. Finally, results are sorted by descending order, keeping only the top 3 years.
 \begin{lstlisting}
 db.articles.aggregate([
 	{$unwind: "$authors"},
@@ -780,7 +799,10 @@ db.articles.aggregate([
 \end{figure}
 
 \subsection{Query 7}
-This query returns the 20 most frequent \verb |keywords|.
+This query returns the 20 most frequent \verb |keywords|.\newline
+\textbf{Description:} the query starts by unwinding the keywords array. The next stage groups with respect to the
+keywords (case insensitive) and computes the count for each group. Finally, the results are ordered by descending order
+and limited to the top 20
 \begin{lstlisting}
 db.articles.aggregate([
 	{$unwind: "$keywords" },
@@ -796,12 +818,15 @@ db.articles.aggregate([
 \end{lstlisting}
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{query/mongo_q7.PNG}
+\includegraphics[width=0.6\textwidth]{query/mongo_q7.PNG}
 \label{fig:query7}
 \end{figure}
 
 \subsection{Query 8}
-This query, given the title of an article, returns the chapter with the higher number of images.
+This query, given the title of an article, returns the chapter with the higher number of images.\newline
+\textbf{Description:} the first stage matches the article given the title. Then an unwind of the chapters array is
+performed. The project stage is used to compute the variable \verb|imgCount| which stores the number of images
+contained in each chapter. The results are sorted by descending order and limited to top 1.
 \begin{lstlisting}
 db.articles.aggregate([
 	{"$match" : {title: "Locality Sensitive Outlier Detection: A ranking driven approach"}},
@@ -823,6 +848,9 @@ db.articles.aggregate([
 \subsection{Query 9}
 This query returns articles citing another article that contains, between its \verb |references|, at least one
 article written in a Milan University. \newline
+\textbf{Description:} the first stage loads, by id, the array of cited documents into a new field called refs.
+Then a match is used to find in this field all the articles that contain at least 1 author that worked for
+a Milan university.\newline
 \textbf{Note:} we used the operator \verb |lookup| to issue a join, in order to access another article instance.
 \begin{lstlisting}
 db.articles.aggregate([
@@ -848,12 +876,18 @@ db.articles.aggregate([
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{query/mongo_q9.PNG}
+\caption{Projection on title, refs.title, refs.authors}
 \label{fig:query9}
 \end{figure}
 
 \subsection{Query 10}
 This query finds the author with the maximum amount of written articles and retrieves his article with the highest number
 of \verb |coauthors|.\newline
+\textbf{Description:} First of all, we compute the \verb |artCount| field which contains the length of the articles array field.
+Then we sort in descending order and keep only first author by \verb |artCount|. After that, a join is performed to load the
+articles documents into the new field \verb |articles_doc|. A new projection is then used to compute the number of authors of
+each loaded article. Finally we sort the result in descending order and keep only the top 1 article. The projection is used
+to display the result in a clearer way.\newline
 \textbf{Note:} we used the operator \verb |lookup| to issue a join in order to access articles referenced by the author.
 \begin{lstlisting}
 db.authors.aggregate([
@@ -884,17 +918,30 @@ db.authors.aggregate([
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{query/mongo_q10.PNG}
+\caption{Projection on name, articles\_doc.title, authCount}
 \label{fig:query10}
 \end{figure}
 
 \subsection{Query 11}
-This query returns all the articles written by authors whose names combined have all 26 letters of the alphabet.
+This query returns all the articles written by authors whose names combined have all 26 letters of the alphabet.\newline
+\textbf{Desciption:} The query is done with the following steps:
+	\begin{itemize}
+		\item an unwind on articles is performed to obtain an entry for each article written by an author
+		\item results are sorted by authors' name in order to have the list sorted alphabetically for further steps
+		\item for each article, a group is performed and the authors list is pushed into an array
+		\item a string concatenating all the authors names retrieved by article documents, is computed and converted to lowercase
+		\item a map operation is performed to split letter by letter the entries; a filter with a regex to keep only alphabet
+			characters is applied, then an unwind on letters is made
+		\item entries are then grouped by article \verb|_id| and authors list; letters are reduced into an array, then the
+			size of this array is computed and only entries containing all 26 letters are matched
+		\item finally, a join operation is performed on articles to obtain the title
+	\end{itemize}
 \begin{lstlisting}
 db.authors.aggregate([
 	{
 		"$unwind" : {path: "$articles"}
 	},
-	{ "$sort" : { "name": 1 } },
+	{ "$sort" : { "name": 1 }},
 	{
 		"$group" : {
 			_id: "$articles",
@@ -991,6 +1038,7 @@ db.authors.aggregate([
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{query/mongo_q11.jpeg}
+\caption{Projection on \_id, title, authors, differentLetters}
 \label{fig:query11}
 \end{figure}
 
