@@ -906,22 +906,26 @@ db.authors.aggregate([
 		localField: "articles",
 		foreignField: "_id",
 		as: "articles_doc"}},
+	{"$unwind" : {path: "$articles_doc"}},
 	{"$project": {
 		"name":1,
 		"articles_doc":1,
+		"artCount":1,
 		"authCount": { "$size": "$articles_doc.authors"}}},
 	{$sort : { "authCount": -1}},
 	{$limit : 1},
 	{"$project": {
 		"name":1,
 		"articles_doc.title":1,
-		"authCount": 1}}
+		"articles_doc.authors":1,
+		"authCount": 1,
+		"artCount":1 }}
 ])
 \end{lstlisting}
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{query/mongo_q10.PNG}
-\caption{Projection on name, articles\_doc.title, authCount}
+\caption{Projection on name, articles\_doc.title, articles\_doc.authors, authCount, artCount}
 \label{fig:query10}
 \end{figure}
 
