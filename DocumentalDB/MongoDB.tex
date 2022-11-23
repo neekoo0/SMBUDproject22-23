@@ -1045,7 +1045,7 @@ db.authors.aggregate([
 \end{figure}
 
 \subsection{Improving Queries Perfomance}
-In the queries, we performed string searches on relatively small textual fields using the \$regex operator.
+In the queries, we performed string searches on relatively small textual fields using the \emph{\$regex} operator.
 This kind of search is easy to use and works very well on small datasets, but it is not optimal in large databases as it is not utilizing indexes efficiently.
 If we wanted to perform advanced and high-performing full-text search queries, we would have had to define textual indexes among the two collections.
 Since only one textual index can be created over a collection, an index over multiple textual fields should be defined.
