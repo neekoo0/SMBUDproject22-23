@@ -1045,9 +1045,11 @@ db.authors.aggregate([
 \end{figure}
 
 \subsection{Improving Queries Perfomance}
-In our queries, we decided not to use indexes because they weren't necessary to achieve a good performance score. Instead, in bigger and
-real world databases, could be helpful to create textual indexes on both the collections, in order to perform full-text search
-on some fields.
+In the queries, we performed string searches on relatively small textual fields using the \$regex operator.
+This kind of search is easy to use and works very well on small datasets, but it is not optimal in large databases as it is not utilizing indexes efficiently.
+If we wanted to perform advanced and high-performing full-text search queries, we would have had to define textual indexes among the two collections.
+Since only one textual index can be created over a collection, an index over multiple textual fields should be defined.
+These indexes can require some disk space and use a lot of resources when created.
 
 
 \chapter{Conclusions}
