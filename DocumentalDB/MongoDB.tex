@@ -243,8 +243,7 @@ The ER diagram designed contains also the following relationships:
 In this section we will describe the structure of our database. We decided to split our dataset in two collections:
 \emph{authors} and \emph{articles}. The reason behind this choice was to increase the performance and to reduce the
 spatial complexity. For example if we need to modify the email of an author we just have to change the field in the
-\emph{author} collection. Whereas, if we just kept one collection, very expensive update query would have been needed
-(change the modified field in each author's sub-document of the entire article collection).\newline
+\emph{author} collection. Whereas, if we just kept one collection, very expensive update query would have been needed.\newline
 
 Furthermore, to avoid redundancies we used manual references to bind the two collections.\newline
 
