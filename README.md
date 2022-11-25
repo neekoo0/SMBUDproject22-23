@@ -1,8 +1,8 @@
 
 # Systems and Methods for Big and Unstructured Data project
 
-**Systems and methods for Big and Unstructured Data** project held at Politecnico di Milano in 2021. 
-The aim of the project is to design and implement NoSQL databases for different scenarios. (2022/2023)  
+**Systems and methods for Big and Unstructured Data** project held at Politecnico di Milano in a.y. 2022/2023. 
+The aim of the project is to design and implement NoSQL databases for different scenarios.  
 
 **Teacher** Marco Brambilla
 
