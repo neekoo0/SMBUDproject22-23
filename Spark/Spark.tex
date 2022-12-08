@@ -215,101 +215,309 @@ In the following image we can see the schema of \emph{Venue}.\newline
 Note: unlike previous implementation we added the \emph{city} field that is randomly populated.
 \includegraphics{venue_schema}
 
-\chapter{Data Import}
-\label{ch:data_import}
-\section{Setup}
-\begin{python}
-from pyspark.sql import SparkSession
-from pyspark.sql.types import StructType, StructField, IntegerType, StringType, ArrayType
-from pyspark.sql.functions import col, to_timestamp, rand, lit, collect_list, array
+\chapter{Dataframe Structure}
+\label{ch:frame_struct}
+\section{Article Structure}
+\begin{lstlisting}
+root
+|-- _id: string (nullable = true)
+|-- title: string (nullable = true)
+|-- authors: array (nullable = true)
+|    |-- element: struct (containsNull = true)
+|    |    |-- idAuth: string (nullable = true)
+|    |    |-- org: string (nullable = true)
+|-- n_citation: integer (nullable = true)
+|-- abstract: string (nullable = true)
+|-- doi: string (nullable = true)
+|-- keywords: array (nullable = true)
+|    |-- element: string (containsNull = true)
+|-- isbn: string (nullable = true)
+|-- page_start: string (nullable = true)
+|-- page_end: string (nullable = true)
+|-- year: integer (nullable = true)
+|-- fos: array (nullable = true)
+|    |-- element: string (containsNull = true)
+|-- references: array (nullable = true)
+|    |-- element: string (containsNull = true)
+|-- issue: string (nullable = true)
+|-- volume: string (nullable = true)
+|-- publisher: string (nullable = true)
+|-- venue_raw: string (nullable = true)
+\end{lstlisting}
+The structure just shown represents an \emph{Article}; its attributes are:
+\begin{itemize}
+    \item \textbf{\_id} is the identifier of a publication.
+    \item \textbf{title} represents the title of the publication.
+    \item \textbf{authors} is an array that contains: \verb |idAuth| of the authors of the article and the \verb |org|
+        field which represent the affiliation.
+    \item \textbf{n\_citation} is the number of times that the publication has been mentioned.
+    \item \textbf{abstract} is a string containing a brief summary of the contents of the paper.
+    \item \textbf{doi} Digital Object Identifier is a persistent and standardized identifier.
+    \item \textbf{keywords} is an array containing keywords of the publication.
+    \item \textbf{isbn} is an identification code of the venue of the publication.
+    \item \textbf{page\_start} defines the starting page of the publication.
+    \item \textbf{page\_end} defines the last page of the publication.
+    \item \textbf{year} represents the year of publication.
+    \item \textbf{fos} is an array containing the fields of study of the publication.
+    \item \textbf{references} set of ObjectIds of the referenced articles.
+    \item \textbf{issue} refers to how many times a periodical has been published during that year.
+    \item \textbf{volume} is the volume of the venue in which the article has been published.
+    \item \textbf{publisher} is the name of the publisher of the article.
+    \item \textbf{venue\_raw} is the name or the abbreviation of the venue (regardless the year, issue or volume) in which the
+        publication was presented.
+\end{itemize}
 
-spark = SparkSession.builder \
-    .master("local") \
-    .appName("SparkByExamples.com") \
-    .getOrCreate()
+\section{Author Structure}
+\begin{lstlisting}
+root
+|-- _id: string (nullable = true)
+|-- name: string (nullable = true)
+|-- nationality: string (nullable = true)
+|-- articles: array (nullable = true)
+|    |-- element: string (containsNull = true)
+|-- bio: string (nullable = true)
+|-- email: string (nullable = true)
+|-- orcid: string (nullable = true)
+|-- dob: timestamp (nullable = true)
+\end{lstlisting}
+The structure just shown represents an \emph{Author}; its attributes are:
+\begin{itemize}
+    \item \textbf{\_id} is the identifier of an author.
+    \item \textbf{name} is the name of the author.
+    \item \textbf{nationality} is the nationality of the author.
+    \item \textbf{articles} is a set of articles identifier of the publications of the author.
+    \item \textbf{bio} is a string that describes the author.
+    \item \textbf{email} is the email address of the author.
+    \item \textbf{orcid} Open Researcher and Contributor ID is a unique identifier for authors of scientific articles.
+    \item \textbf{dob} is the birth date of the author.
+\end{itemize}
+
+\section{Venue Structure}
+\begin{lstlisting}
+root
+|-- raw: string (nullable = true)
+|-- type: integer (nullable = true)
+|-- artIds: array (nullable = false)
+|    |-- element: string (containsNull = false)
+|-- city: string (nullable = true)
+\end{lstlisting}
+The structure just shown represents a \emph{Venue}. This dataframe was obtained using data imported from
+the article \verb |JSON| shown before. \emph{Venue} attributes are the following:
+\begin{itemize}
+    \item \textbf{raw} is the name or the abbreviation of the venue (regardless the year, issue or volume) in which the
+        publication was presented.
+    \item \textbf{type} indicates the type of the publication.
+    \item \textbf{artIds} is a set of articles identifier associated to the venue.
+    \item \textbf{city} represents the location of the venue.
+\end{itemize}
+
+
+
+
+\chapter{Commands and Queries}
+\label{ch:ceq}
+\section{Commands}
+We have identified the following \verb |INSERT| and \verb |UPDATE| commands to show the system basic functionalities.
+
+\subsection{Insert a new author}
+\label{auth_insert}
+Assuming it is not present in the dataset, we created a new row with the values for the new author and we added it to the
+dataframe.\newline
+\begin{python}
+new_author = Row(
+    _id="638db170ae9ea0d19fad7a79",
+    name="Emanuele Delle Valle ",
+    nationality="it",
+    articles=[],
+    bio="Emanuele Della Valle holds a PhD in Computer Science from the \
+        Vrije Universiteit Amsterdam and a Master degree in Computer Science\
+        and Engineering from Politecnico di Milano. He is associate professor\
+        at the Department of Electronics, Information and Bioengineering of\
+        the Politecnico di Milano.",
+    email="emanuele.dellavalle@gmail.com ",
+    orcid="0000-0002-5176 -5885",
+    dob= datetime.strptime("March 7, 1975", "%B %d, %Y")
+)
+
+df_authors = df_authors.union(spark.createDataFrame([new_author], schema = schemaAuthors))
 \end{python}
 
-\section{Article Custom Schema}
+\subsection{Insert a new author}
+\label{pub_insert}
+Assuming it is not present in the dataset, we created a new row with the values for a new article written by the author created
+in section ~\ref{auth_insert}. In order to set the authors, we instantiated an array \verb |new_authors|.\newline
 \begin{python}
-schemaArticle = StructType([
-    StructField('_id', StringType(), True),
-    StructField('title', StringType(), True),
-    StructField('authors',
-        ArrayType(
-        StructType([
-            StructField('idAuth', StringType(), True),
-            StructField('org', StringType(), True)
-        ]), True)
-    ),
-    StructField('n_citation', IntegerType(), True),
-    StructField('abstract', StringType(), True),
-    StructField('doi', StringType(), True),
-    StructField('keywords', ArrayType(StringType()), True),
-    StructField('isbn', StringType(), True),
-    StructField('page_start', StringType(), True),
-    StructField('page_end', StringType(), True),
-    StructField('year', IntegerType(), True),
-    StructField('fos', ArrayType(StringType()), True),
-    StructField('references', ArrayType(StringType()), True),
-    StructField('venue',
-        StructType([
-            StructField('raw', StringType(), True),
-            StructField('type', IntegerType(), True),
-            StructField('issue', StringType(), True),
-            StructField('volume', StringType(), True),
-            StructField('publisher', StringType(), True)
-        ])
-    ),
-])
-\end{python}
-\bigskip
-We decided to use import from schema to explicitly show data structure:
-\begin{python}
-df_articles = spark.read.schema(schemaArticle).json("../dblp_sample_filtered_spark.json", multiLine=True)
-\end{python}
-\bigskip
-The attributes \verb |issue|, \verb |volume| and \verb |publisher| inside venue are moved back in the root structure
-and removed from the inner struct:
-\begin{python}
-df_articles = df_articles.withColumn("issue", col("venue.issue")) \
-                        .withColumn("volume", col("venue.volume")) \
-                        .withColumn("publisher", col("venue.publisher")) \
-                        .withColumn("venue", col("venue").dropFields("issue", "volume", "publisher"))
+new_authors =  [Row("638db170ae9ea0d19fad7a79", "Politecnico di Milano"), Row("638db170ae9ea0d19fad7a7a", "Politecnico di Milano")]
+
+new_article = Row(
+    _id="638db237d794b76f45c77916",
+    title="An extensive study of C-SMOTE, a Continuous Synthetic Minority Oversampling Technique for Evolving Data Streams",
+    authors=new_authors,
+    n_citation=3,
+    abstract = "Streaming Machine Learning (SML) studies algorithms that update their models,\
+        given an unbounded and often non-stationary flow of data performing a single pass. Online \
+        class imbalance learning is a branch of SML that combines the challenges of both class imbalance\
+        and concept drift. In this paper, we investigate the binary classification problem by rebalancing\
+        an imbalanced stream of data in the presence of concept drift, accessing one sample at a time.",
+        doi="10.1016/j.eswa.2022.116630",
+    keywords=["Evolving Data Stream","Streaming","Concept drift","Balancing"],
+    isbn="123-4-567-89012-3",
+    page_start="39",
+    page_end="46",
+    year=2022,
+    fos=["Computer Science","Stream Reasoning","Big Data"],
+    references=["53e99fe4b7602d97028bf743","53e99fddb7602d97028bc085"],
+    issue="1",
+    volume="196",
+    publisher="Elsevier",
+    venue_raw="ESA"
+)
+
+df_articles = df_articles.union(spark.createDataFrame([new_article]))
 \end{python}
 
-\section{Venue Collection Structure}
-A new dataframe is created with attributes of venue and the \verb |_id| of the article, then it is all grouped by
-venue attributes and, for each venue, a list of the articles ids is created. Finally we drop rows with null \verb|raw|
-to delete inconsistent tuple.
+\subsection{Insert a new venue}
+Assuming it is not present in the dataset, we created a new row with the values for a new venue \emph{ESA} hosted in
+\emph{Montreal}.\newline
+\textbf{Note:} in field \verb |artIds| we set the article created in section ~\ref{pub_insert}.\newline
 \begin{python}
-df_venues = df_articles.select("venue.raw", "venue.type", "_id") \
-                        .groupBy("raw", "type") \
-                        .agg(collect_list("_id").alias("artIds")) \
-                        .dropna(subset=["raw"])
-\end{python}
-\bigskip
-Now we can keep only the raw attribute of the venue:
-\begin{python}
-df_articles = df_articles.withColumn("venue_raw", col("venue.raw")).drop("venue")
-\end{python}
-\bigskip
-In the end, we add a generated field inside venues collection: for each venue a random city is selected that should
-represent the place where the venue was held.
-\begin{python}
-citiesList = ["New York", "London", "Paris", "Berlin", "Madrid", "Rome", "Dublin", "Copenhagen", "Vienna", "Amsterdam", "Brussels", "Lisbon", "Prague", "Athens", "Budapest", "Warsaw", "Zurich", "Luxembourg", "Oslo", "Stockholm", "Helsinki", "Moscow", "Istanbul", "Kiev", "Minsk", "Belgrade", "Bucharest", "Sofia", "Tallinn", "Riga", "Vilnius", "Tbilisi", "Yerevan", "Baku", "Dubai", "Abu Dhabi", "Doha", "Manama", "Muscat", "Riyadh", "Jeddah", "Mecca", "Medina", "Kuala Lumpur", "Singapore", "Hong Kong", "Shanghai", "Beijing", "Tokyo", "Seoul", "Bangkok", "Manila"]
-cities = array([lit(city) for city in citiesList])
-df_venues = df_venues.withColumn("city", cities.getItem((rand() * len(citiesList)).cast("int")))
+new_venue = Row(
+    raw="ESA",
+    type=1,
+    artIds=["638db237d794b76f45c77916"],
+    city="Montreal"
+)
+
+df_venues = df_venues.union(spark.createDataFrame([new_venue]))
 \end{python}
 
-\section{Author Collection Structure}
-In order to handle authors' collection, we simply import from json with autogenerated schema, applying a conversion from
-string to timestamp.
+\subsection{Insert a new article in his author dataframe}
+Through this command we inserted the article created in section ~\ref{pub_insert} to its authors. In order to do that, we
+selected the authors through the ids and we add the article id to their field \verb |articles|.\newline
+\textbf{Note:} one of the author is the one created in section ~\ref{auth_insert}.\newline
 \begin{python}
-df_authors = spark.read.json("../dblp_sample_reverted_filtered_spark.json", multiLine=True)
-df_authors = df_authors.withColumn("dateofbirth", to_timestamp(df_authors["dob"], "yyyy-MM-dd'T'HH:mm:ss'Z'")) \
-                        .drop("dob") \
-                        .withColumnRenamed("dateofbirth", "dob")
+df_authors = df_authors.withColumn(
+    "articles",
+    f.when(f.col("_id") == "638db170ae9ea0d19fad7a79",
+        f.array_union(df_authors.articles, f.array(f.lit("638db237d794b76f45c77916"))))\
+    .when(f.col("_id") == "638db170ae9ea0d19fad7a7a",
+        f.array_union(df_authors.articles, f.array(f.lit("638db237d794b76f45c77916"))))
+    .otherwise(f.col("articles"))
+)
 \end{python}
+
+\subsection{Update the number of citations of referenced publications}
+Through the following snippet of code is possible to increment the \verb |n_citations| field of the \emph{Publications}
+referenced by the article created in section ~\ref{pub_insert}.\newline
+\textbf{Note:} field \verb |n_citations| is updated for both the referenced articles.\newline
+\begin{python}
+df_articles = df_articles.withColumn(
+    "n_citation",
+    f.when(f.col("_id") == "53e99fe4b7602d97028bf743",
+        df_articles.n_citation+1) \
+    .when(f.col("_id") == "53e99fddb7602d97028bc085",
+        df_articles.n_citation+1)
+    .otherwise(f.col("n_citation"))
+)
+\end{python}
+
+\section{Queries}
+We have identified the following queries in order to show the system's basic functionalities.\newline
+In the following sections title we wrote the basic requirements for every query, that, for ease of read, are represented
+as \verb |SQL| clauses.
+
+\subsection{Query 1 - WHERE, JOIN}
+This query returns the type of the venue of an article with a the following title: \emph{"Locality Sensitive Outlier Detection:
+A ranking driven approach"}.\newline
+\begin{python}
+df_articles.join(df_venues, df_articles.venue_raw == df_venues.raw, "inner")\
+           .filter(f.col("title") == "Locality Sensitive Outlier Detection: A ranking driven approach").select("title", "raw", "type").show()
+\end{python}
+
+\subsection{Query 2 - WHERE, LIMIT, LIKE}
+This query returns the articles whose title string contains \emph{"Machine Learning"}.\newline
+\begin{python}
+df_articles.filter(f.col("title").like("%Machine Learning%")).limit(3).show()
+\end{python}
+
+\subsection{Query 3 - WHERE, IN, NESTED QUERY}
+This query finds authors that has the same nationality of at least one of the authors of \emph{"Locality Sensitive Outlier
+Detection: A ranking driven approach"} article.\newline
+\textbf{Description:} we started creating the list of nationalities of the article's authors adding them to a list: \verb|nationality_list|.
+Then we look for authors with the a nationality contained in the list.\newline
+\begin{python}
+nationalities_list = df_articles.filter(f.col("title") == "Locality Sensitive Outlier Detection: A ranking driven approach")\
+                                .select(f.explode(df_articles.authors.idAuth).alias("idAuth"))\
+                                .join(df_authors, on=f.col("idAuth") == df_authors._id)\
+                                .select("nationality")\
+                                .agg(f.collect_set("nationality")).collect()[0][0]
+
+df_authors.filter(f.col("nationality")\
+          .isin(nationalities_list)).limit(10).show()
+\end{python}
+
+\subsection{Query 4 - GROUP BY, JOIN, AS}
+This query finds the 3 most frequent keywords of articles written by italian authors.\newline
+\textbf{Description:} we started from finding all the italian authors, then we grouped them by articles. Then we count the
+keywords putting them in descending order.\newline
+\begin{python}
+df_italian = df_authors.filter(f.col("nationality") == "it")\
+                       .select(f.explode("articles")).withColumnRenamed("col","articles")
+df_italian = df_italian.groupby("articles").count()
+
+df_keywords = df_italian.join(df_articles, df_italian.articles == df_articles._id, "inner")\
+                        .select("articles", f.explode("keywords")).withColumnRenamed("col","keywords")\
+                        .groupby("keywords")\
+                        .agg(f.count("keywords").alias("n_occurences"))\
+                        .sort("n_occurences", ascending=False)\
+                        .limit(3).show()
+\end{python}
+
+\subsection{Query 5 - WHERE, GROUP BY}
+This query finds the cities with more than 65 venues.\newline
+\begin{python}
+df_venues.groupby("city")\
+         .count()\
+         .filter(f.col("count") > 65)\
+         .sort("count", ascending=False).show()
+\end{python}
+
+\subsection{Query 6 - GROUP BY, HAVING, AS}
+This query finds the field of studies that appears more than 15 times.\newline
+\begin{python}
+df_articles.select("_id", "title", f.explode("fos")).withColumnRenamed("col", "fos")\
+           .groupby("fos")\
+           .agg(f.count("fos").alias("n_occurence"))\
+           .filter(f.col("n_occurence") > 15).show()
+\end{python}
+
+\subsection{Query 7 - WHERE, GROUP BY, HAVING, AS}
+This query finds all the volumes with at least 5 articles in the dataset, published after 2000.\newline
+\textbf{Description:} we started from filtering the year of publication, then we grouped by \verb |venue_raw| and \verb |volume|
+in order to separate different edition of the same venue. After that we filtered the number of articles for every edition.\newline
+\begin{python}
+df_articles.filter(f.col("year") > 2000)\
+           .groupby("venue_raw", "volume")\
+           .agg(f.count("volume").alias("num_articles"))\
+           .filter(f.col("num_articles") > 4)\
+           .show()
+\end{python}
+
+\subsection{Query 10 - WHERE, GROUP BY, HAVING, 2 JOINS}
+This query finds  all the authors that published on more than 2 Journals.\newline
+\begin{python}
+df_exploded_authors = df_authors.alias("auth")\
+                                .select("auth._id","auth.name", f.explode("auth.articles").alias("article"))\
+                                .join(df_articles.alias("art"), on=f.col("article") == df_articles._id)\
+                                .select("auth._id","auth.name","art._id","art.venue_raw")\
+                                .join(df_venues.alias("ven"), on=f.col("venue_raw") == df_venues.raw)\
+                                .filter(f.col("type") == 1)\
+                                .groupBy("auth._id")\
+                                .agg(f.first("name").alias("name"),f.countDistinct("raw").alias("venue_count"),f.concat_ws(" - ",f.collect_set("raw")).alias("venues_list"))\
+                                .filter(f.col("venue_count") > 2)\
+                                .orderBy("venue_count", ascending=False).show(3,truncate=False)
+\end{python}
+
 
 
 \end{document}
