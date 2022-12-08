@@ -408,6 +408,14 @@ df_articles = df_articles.withColumn(
 )
 \end{python}
 
+\subsection{Deleting an author from the database}
+Through the following snippet of code is possible to delete an author from the database. In order to do that we started from
+filtering on the identifier of the author to be removed and we deleted it. \newline
+\begin{python}
+df_authors.filter(f.col("_id") == "638db170ae9ea0d19fad7a79").show()
+df_authors = df_authors.filter(f.col("_id") != "638db170ae9ea0d19fad7a79")
+\end{python}
+
 \section{Queries}
 We have identified the following queries in order to show the system's basic functionalities.\newline
 In the following sections title we wrote the basic requirements for every query, that, for ease of read, are represented
@@ -416,22 +424,48 @@ as \verb |SQL| clauses.
 \subsection{Query 1 - WHERE, JOIN}
 This query returns the type of the venue of an article with a the following title: \emph{"Locality Sensitive Outlier Detection:
 A ranking driven approach"}.\newline
+\textbf{Description:} starting from the articles dataframe, a join is performed with the venues dataframe on the article's
+\verb|venue_raw| field. After that, we filter the articles with the given title. Finally, we project over title,venue raw and venue type.\newline
 \begin{python}
 df_articles.join(df_venues, df_articles.venue_raw == df_venues.raw, "inner")\
-           .filter(f.col("title") == "Locality Sensitive Outlier Detection: A ranking driven approach").select("title", "raw", "type").show()
+           .filter(f.col("title") == "Locality Sensitive Outlier Detection: A ranking driven approach")\
+           .select("title", "raw", "type")\
+           .show(truncate=False)
 \end{python}
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{query/spark_q1.PNG}
+\label{fig:query1}
+\end{figure}
 
 \subsection{Query 2 - WHERE, LIMIT, LIKE}
 This query returns the articles whose title string contains \emph{"Machine Learning"}.\newline
+\textbf{Description:} we filter the articles whose title contains "Machine Learning" using the like operator. Results are then limited
+to 3 tuples and projected over the article title.\newline
 \begin{python}
-df_articles.filter(f.col("title").like("%Machine Learning%")).limit(3).show()
+df_articles.filter(f.col("title").like("%Machine Learning%"))\
+           .limit(3)\
+           .select("title")\
+           .show(truncate=False)
 \end{python}
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{query/spark_q2.PNG}
+\label{fig:query2}
+\end{figure}
 
 \subsection{Query 3 - WHERE, IN, NESTED QUERY}
 This query finds authors that has the same nationality of at least one of the authors of \emph{"Locality Sensitive Outlier
 Detection: A ranking driven approach"} article.\newline
-\textbf{Description:} we started creating the list of nationalities of the article's authors adding them to a list: \verb|nationality_list|.
-Then we look for authors with the a nationality contained in the list.\newline
+\textbf{Description:} this query has been splitted in 2 queries:
+                        \begin{itemize}
+                            \item \emph{First query:} articles are filtered to find the article with the given title. After that,
+                                the authors array is exploded to perform a join on its idAuth field with the authors dataframe.
+                                Finally, nationalities of the article's authors are collected into a list using the \verb |collect_set|.\newline
+                                \verb|collect_set|, as the name suggests, discards duplicates, so the final list is a set of nationalities.
+                            \item \emph{Second query:} starting from the authors' dataframe, we filtered all the authors whose nationality is
+                                present inside the list created with the previous query.\\
+                        \end{itemize}
 \begin{python}
 nationalities_list = df_articles.filter(f.col("title") == "Locality Sensitive Outlier Detection: A ranking driven approach")\
                                 .select(f.explode(df_articles.authors.idAuth).alias("idAuth"))\
@@ -440,17 +474,26 @@ nationalities_list = df_articles.filter(f.col("title") == "Locality Sensitive Ou
                                 .agg(f.collect_set("nationality")).collect()[0][0]
 
 df_authors.filter(f.col("nationality")\
-          .isin(nationalities_list)).limit(10).show()
+          .isin(nationalities_list))\
+          .select("name","nationality")\
+          .show(truncate=False)
 \end{python}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{query/spark_q3.PNG}
+\label{fig:query3}
+\end{figure}
 
 \subsection{Query 4 - GROUP BY, JOIN, AS}
 This query finds the 3 most frequent keywords of articles written by italian authors.\newline
-\textbf{Description:} we started from finding all the italian authors, then we grouped them by articles. Then we count the
-keywords putting them in descending order.\newline
+\textbf{Description:} starting from the authors dataframe, we keep only italian authors and explode the articles field, renaming the
+new obtained field to \verb |articles|. After that, duplicates are discarded.\newline
+In the second part of the query, we load the full articles's rows using a join. Then, keywords array is exploded. Keywords are grouped
+and counted. The groups are finally sorted and limited to show the top 3 keywords.\newline
 \begin{python}
 df_italian = df_authors.filter(f.col("nationality") == "it")\
-                       .select(f.explode("articles")).withColumnRenamed("col","articles")
-df_italian = df_italian.groupby("articles").count()
+                       .select(f.explode("articles")).withColumnRenamed("col","articles")\
+                       .distinct()
 
 df_keywords = df_italian.join(df_articles, df_italian.articles == df_articles._id, "inner")\
                         .select("articles", f.explode("keywords")).withColumnRenamed("col","keywords")\
@@ -459,52 +502,169 @@ df_keywords = df_italian.join(df_articles, df_italian.articles == df_articles._i
                         .sort("n_occurences", ascending=False)\
                         .limit(3).show()
 \end{python}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{query/spark_q4.PNG}
+\label{fig:query4}
+\end{figure}
 
 \subsection{Query 5 - WHERE, GROUP BY}
 This query finds the cities with more than 65 venues.\newline
+\textbf{Description:} the venues dataframe is grouped with respect to the city to perform the count. After that, we keep only cities with
+more than 65 venues and sort the result in descending order.\newline
 \begin{python}
-df_venues.groupby("city")\
-         .count()\
-         .filter(f.col("count") > 65)\
-         .sort("count", ascending=False).show()
+df_venues\
+    .groupby("city")\
+    .count()\
+    .filter(f.col("count") > 65)\
+    .sort("count", ascending=False).show()
 \end{python}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.3\textwidth]{query/spark_q5.PNG}
+\label{fig:query5}
+\end{figure}
 
 \subsection{Query 6 - GROUP BY, HAVING, AS}
 This query finds the field of studies that appears more than 15 times.\newline
+\textbf{Description:} We use the explode function to convert the fos array into multiple rows,then we rename the resulting column to
+\verb |fos|, group by \verb|fos| and count the number of occurrences.\newline
+After that, we keep rows with more than 15 occurrences, sort the remaining rows in descending order based on the number of occurrences,
+and show the top rows.\newline
 \begin{python}
-df_articles.select("_id", "title", f.explode("fos")).withColumnRenamed("col", "fos")\
-           .groupby("fos")\
-           .agg(f.count("fos").alias("n_occurence"))\
-           .filter(f.col("n_occurence") > 15).show()
+df_articles\
+    .select("_id", "title", f.explode("fos")).withColumnRenamed("col", "fos")\
+    .groupby("fos")\
+    .agg(f.count("fos").alias("n_occurencies"))\
+    .filter(f.col("n_occurencies") > 15)\
+    .sort("n_occurencies", ascending=False)\
+    .show(truncate=False)
 \end{python}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{query/spark_q6.PNG}
+\label{fig:query6}
+\end{figure}
 
 \subsection{Query 7 - WHERE, GROUP BY, HAVING, AS}
 This query finds all the volumes with at least 5 articles in the dataset, published after 2000.\newline
-\textbf{Description:} we started from filtering the year of publication, then we grouped by \verb |venue_raw| and \verb |volume|
-in order to separate different edition of the same venue. After that we filtered the number of articles for every edition.\newline
+\textbf{Description:} This query filters the articles in the articles dataframe to only those published after the year 2000,
+then groups the remaining articles by \verb|venue_raw| and \verb|volume|, counts the number of articles per group, filters the
+groups to only those with more than 4 articles, and finally displays the results.\newline
 \begin{python}
-df_articles.filter(f.col("year") > 2000)\
-           .groupby("venue_raw", "volume")\
-           .agg(f.count("volume").alias("num_articles"))\
-           .filter(f.col("num_articles") > 4)\
-           .show()
+df_articles\
+    .filter(f.col("year") > 2000)\
+    .groupby("venue_raw", "volume")\
+    .agg(f.count("volume").alias("num_articles"))\
+    .filter(f.col("num_articles") > 4)\
+    .show(truncate = False)
 \end{python}
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{query/spark_q7.PNG}
+\label{fig:query7}
+\end{figure}
+
+\subsection{Query 8 - WHERE, NESTED QUERY, GROUP BY}
+The following query is divided in two queries:
+\begin{itemize}
+    \item[\textbf{8a.}] find the venue with highest number of articles
+    \item[\textbf{8b.}] find the number of articles published per year on that venue\\
+\end{itemize}
+\begin{python}
+top_venue = df_venues\
+                .select("raw",f.size("artIds").alias("count"))\
+                .orderBy("count",ascending = False)\
+                .limit(1)
+
+df_articles_year = df_articles\
+                        .filter(f.col("venue_raw") == top_venue.collect()[0][0])\
+                        .groupBy("year")\
+                        .count()\
+                        .orderBy("count",ascending=False)\
+                        .select(f.lit(top_venue.collect()[0][0]).alias("VenueRAW"),"year",f.col("count").alias("articles_count"))\
+                        .show(truncate=False)
+\end{python}
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{query/spark_q8.PNG}
+\label{fig:query8}
+\end{figure}
+
+\subsection{Query 9 - WHERE, GROUP BY, HAVING, 1 JOIN}
+The following query finds the articles, published after 2000, with more than 13 different nationalities of its authors.\newline
+\begin{python}
+df_articles_nationalities = df_articles.alias("art")\
+                                .filter(f.col("year") > 2000)\
+                                .select("art._id","art.title", f.explode("art.authors.idAuth").alias("author"))\
+                                .join(df_authors.alias("auth"), on=f.col("author") == df_authors._id)\
+                                .groupBy("art._id")\
+                                .agg(f.first("title").alias("title"),f.countDistinct("nationality").alias("different_nationalities"), f.collect_set("nationality").alias("nationalities_list"))\
+                                .filter(f.col("different_nationalities") > 13)\
+                                .orderBy("different_nationalities",ascending=False)\
+                                .select("title","different_nationalities",f.sort_array("nationalities_list").alias("nationalities_list"))\
+                                .show(truncate=False)
+\end{python}
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{query/spark_q9.PNG}
+\label{fig:query9}
+\end{figure}
 
 \subsection{Query 10 - WHERE, GROUP BY, HAVING, 2 JOINS}
 This query finds  all the authors that published on more than 2 Journals.\newline
 \begin{python}
 df_exploded_authors = df_authors.alias("auth")\
-                                .select("auth._id","auth.name", f.explode("auth.articles").alias("article"))\
-                                .join(df_articles.alias("art"), on=f.col("article") == df_articles._id)\
-                                .select("auth._id","auth.name","art._id","art.venue_raw")\
-                                .join(df_venues.alias("ven"), on=f.col("venue_raw") == df_venues.raw)\
-                                .filter(f.col("type") == 1)\
-                                .groupBy("auth._id")\
-                                .agg(f.first("name").alias("name"),f.countDistinct("raw").alias("venue_count"),f.concat_ws(" - ",f.collect_set("raw")).alias("venues_list"))\
-                                .filter(f.col("venue_count") > 2)\
-                                .orderBy("venue_count", ascending=False).show(3,truncate=False)
+                        .select("auth._id","auth.name", f.explode("auth.articles").alias("article"))\
+                        .join(df_articles.alias("art"), on=f.col("article") == df_articles._id)\
+                        .select("auth._id","auth.name","art._id","art.venue_raw")\
+                        .join(df_venues.alias("ven"), on=f.col("venue_raw") == df_venues.raw)\
+                        .filter(f.col("type") == 1)\
+                        .groupBy("auth._id")\
+                        .agg(f.first("name").alias("name"),f.countDistinct("raw").alias("venue_count"),f.concat_ws(" - ",f.collect_set("raw")).alias("venues_list"))\
+                        .filter(f.col("venue_count") > 2)\
+                        .orderBy("venue_count", ascending=False).show(3,truncate=False)
 \end{python}
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{query/spark_q11.PNG}
+\label{fig:query10}
+\end{figure}
 
+\subsection{Query 11 - EXTRA}
+This query returns all the articles written by authors whose names combined have all 26 letters of the alphabet.\newline
+\begin{python}
+df_authors.select("name", f.explode("articles").alias("idArt")) \
+          .groupBy("idArt") \
+          .agg(f.collect_set("name").alias("authorsList")) \
+          .select("idArt", "authorsList", (f.size(f.array_distinct(f.split(f.regexp_replace(f.lower(f.concat_ws("", "authorsList")), "[^a-z]", ""), "")))-1).alias("differentLetters")) \
+          .filter(f.col("differentLetters") == 26)\
+          .join(df_articles, on=f.col("idArt") == df_articles._id) \
+          .select("title", f.concat_ws(", ", f.sort_array("authorsList")).alias("authorsList"), "differentLetters") \
+          .show(truncate=False)
+\end{python}
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{query/spark_q11.PNG}
+\label{fig:query11}
+\end{figure}
+
+\subsection{Query 12 - EXTRA}
+This query returns all articles written in affiliation with \emph{Politecnico of Milano}.\newline
+\begin{python}
+df_articles\
+    .select("title",f.explode("authors").alias("affiliation"))\
+    .filter(f.col("affiliation.org").like("%Poli%Mil%"))\
+    .join(df_authors, on=f.col("affiliation.idAuth") == df_authors._id) \
+    .select("title", "name", "affiliation.org") \
+    .orderBy("title","name")\
+    .show(truncate=False)
+\end{python}
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{query/spark_q12.PNG}
+\label{fig:query12}
+\end{figure}
 
 
 \end{document}
