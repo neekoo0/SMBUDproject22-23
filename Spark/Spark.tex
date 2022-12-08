@@ -200,73 +200,20 @@ In this chapter will be presented the problem specification and the hypothesis u
 
 \chapter{Data Structure}
 \label{ch:data_struct}
+In this chapter will be described the dataframes used. We created the following dataframes using the same JSONs of the MONGO DB part of the project but differently from MONGO DB we created a third dataframe for the \emph{venue} moving some of the attributes.
 \section{Article structure}
-In the following \verb |JSON| file we can see how the \emph{Article} is structured in our dataset.\newline
-\textbf{Note:} in some fields we decided not to insert all the content only for ease of read reasons.\newline
-\begin{lstlisting}
-{
-"_id": "53e99f86b7602d9702859fdf",
-"title": "Locality Sensitive Outlier Detection: A ranking driven approach",
-"authors": [
-    {
-    "idAuth": "542a4c9fdabfae61d496694e",
-    "org": "Computer Science and Engineering Department, The Ohio State University, USA"
-    },
-    {
-    "idAuth": "53f48bc5dabfaea7cd1cce1d",
-    "org": "Computer Science and Engineering Department, The Ohio State University, USA"
-    },
-    {
-    "idAuth": "53f44b6fdabfaec09f1dd00d",
-    "org": "Computer Science and Engineering Department, The Ohio State University, USA"
-    }
-],
-"n_citation": 60,
-"abstract": "Outlier detection is fundamental to a variety of database and analytic tasks. Recently, distance-based outlier detection has emerged as a viable and scalable alternative to traditional statistical and geometric approaches. In this article we explore the role of ranking for the efficient discovery of distance-based outliers from large high dimensional data sets. Specifically, we develop a light-weight ranking scheme that is powered by locality sensitive hashing, which reorders the database points according to their likelihood of being an outlier. We provide theoretical arguments to justify the rationale for the approach and subsequently conduct an extensive empirical study highlighting the effectiveness of our approach over extant solutions. We show that our ranking scheme improves the efficiency of the distance-based outlier discovery process by up to 5-fold. Furthermore, we find that using our approach the top outliers can often be isolated very quickly, typically by scanning less than 3% of the data set.",
-"doi": "10.1109/ICDE.2011.5767852",
-"keywords": [
-    "database point",
-    "ranking scheme",
-    "geometric approach",
-    ...
-],
-"isbn": "978-1-4244-8958-9",
-"page_start": "410",
-"page_end": "421",
-"year": 2011,
-"fos": [
-    "Locality-sensitive hashing",
-    "Anomaly detection",
-    "Data mining",
-    ...
-],
-"venue": {
-    "raw": "ICDE",
-    "type": 0
-},
-"references": [
-    "53e99fddb7602d97028b7e65"
-    ]
-}
-\end{lstlisting}
+In the following image we can see the schema of  \emph{Article}.\newline
+Note: unlike the previous implementation we moved the fields: \emph{issue}, \emph{volume}, \emph{publisher}, \emph{venue\_raw} inside the article.\newline
+\includegraphics{article_schema}
 
-\newpage
 \section{Author structure}
-In the following \verb |JSON| file we can see how the \emph{Author} is structured in our dataset.\newline
-\textbf{Note:} in some fields we decided not to insert all the content only for ease of read reasons.
-\begin{lstlisting}
-{
-"_id":"53f45775dabfaee4dc8162e6",
-"name":"Guillermo Jorge-Botana",
-"articles":["53e99f86b7602d970285a187"],
-"orcid":"0000-0001-5879-6783",
-"bio": "Qing-Long Han received the B.Sc. degree in mathematics from the...",
-"email":"Guillermo.Jorge-Botana@yahoo.com",
-"nationality":"de",
-"dob":"1945-06-19T00:00:00Z"
-},
-\end{lstlisting}
+In the following image we can see the schema of \emph{Author}.\newline
+\includegraphics{author_schema}
 
+\section{Venue structure}
+In the following image we can see the schema of \emph{Venue}.\newline
+Note: unlike previous implementation we added the \emph{city} field that is randomly populated.
+\includegraphics{venue_schema}
 
 \chapter{Data Import}
 \label{ch:data_import}
