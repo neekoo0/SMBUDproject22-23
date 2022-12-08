@@ -200,20 +200,7 @@ In this chapter will be presented the problem specification and the hypothesis u
 
 \chapter{Data Structure}
 \label{ch:data_struct}
-In this chapter will be described the dataframes used. We created the following dataframes using the same JSONs of the MONGO DB part of the project but differently from MONGO DB we created a third dataframe for the \emph{venue} moving some of the attributes.
-\section{Article structure}
-In the following image we can see the schema of  \emph{Article}.\newline
-Note: unlike the previous implementation we moved the fields: \emph{issue}, \emph{volume}, \emph{publisher}, \emph{venue\_raw} inside the article.\newline
-\includegraphics{article_schema}
-
-\section{Author structure}
-In the following image we can see the schema of \emph{Author}.\newline
-\includegraphics{author_schema}
-
-\section{Venue structure}
-In the following image we can see the schema of \emph{Venue}.\newline
-Note: unlike previous implementation we added the \emph{city} field that is randomly populated.
-\includegraphics{venue_schema}
+In this part of the project we used the same two JSONs used in the MONGODB implementation.
 
 \chapter{Dataframe Structure}
 \label{ch:frame_struct}
@@ -308,7 +295,7 @@ the article \verb |JSON| shown before. \emph{Venue} attributes are the following
         publication was presented.
     \item \textbf{type} indicates the type of the publication.
     \item \textbf{artIds} is a set of articles identifier associated to the venue.
-    \item \textbf{city} represents the location of the venue.
+    \item \textbf{city} represents the location of the venue an it is randomly populated.
 \end{itemize}
 
 
