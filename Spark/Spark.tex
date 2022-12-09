@@ -198,6 +198,43 @@ groupnumber=10
 In this chapter will be presented the problem specification and the hypothesis under which the database is implemented.
 
 
+\chapter{Conceptual Model}
+\label{ch:conc_model}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{legendaER.png}
+\caption{ER Diagram Organization}
+\label{fig:erleg}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{ERSpark.png}
+\caption{Conceptual Model}
+\label{fig:er}
+\end{figure}
+\newpage
+
+The conceptual model just showed contains 6 main entities, that are related to each other through various relationships:
+\begin{itemize}
+    \item \textbf{Publication:} represents all the scientific articles. Its attributes are: \emph{\_id, title, authors, n\_citations,
+        abstract, doi, keywords, isbn, page\_start, page\_end, year, fos, references, issue, volume, publisher, venue\_raw} and its
+        organization will be presented later
+    \item \textbf{Author:} it is the one who contributed to a publication. Its attributes are: \emph{\_id, name, nationality, articles,
+        bio, email, orcid, dob (date of birth)}
+    \item \textbf{Venue:} it is where a publication is published or presented. Its attributes are: \emph{raw, type,
+        artIds, city}
+    \item \textbf{FieldOfStudy:} this entity represents the subjects of the publication and its attribute is \emph{name}
+\end{itemize}
+
+The designed model contains also the following relationships:
+\begin{itemize}
+    \item \textbf{Mentions:} is the relationship between a \emph{publication} and another \emph{publication} cited by the first one
+    \item \textbf{Published\_on:} is the relationship between a \emph{publication} and its \emph{venue}
+    \item \textbf{Writes:} is the relationship between \emph{author} and \emph{publication} which features the affiliation property.
+    \item \textbf{Regards:} is the relationship between a \emph{publication} and its \emph{fields of study}
+\end{itemize}
+
+
 \chapter{Data Structure}
 \label{ch:data_struct}
 In this part of the project we used the same two JSONs used in the MONGODB implementation.
@@ -569,8 +606,14 @@ df_articles\
 The following query is divided in two queries:
 \begin{itemize}
     \item[\textbf{8a.}] find the venue with highest number of articles
-    \item[\textbf{8b.}] find the number of articles published per year on that venue\\
+    \item[\textbf{8b.}] find the number of articles published per year on that venue
 \end{itemize}
+\textbf{Description:} the basic functionalities of the two queries are the following
+                    \begin{itemize}
+                        \item the \emph{first query} selects the top venue from the venue dataframe based on the size of the \verb|artIds| attribute
+                        \item the \emph{second query} filters articles with the selected \verb|venue_raw|, groups the articles by year, and counts the number
+                            of articles in each group. Finally, it displays the results projecting over \verb|top_venue|, \verb|year| and \verb|articles_count| \\
+                    \end{itemize}
 \begin{python}
 top_venue = df_venues\
                 .select("raw",f.size("artIds").alias("count"))\
@@ -593,6 +636,11 @@ df_articles_year = df_articles\
 
 \subsection{Query 9 - WHERE, GROUP BY, HAVING, 1 JOIN}
 The following query finds the articles, published after 2000, with more than 13 different nationalities of its authors.\newline
+\textbf{Description:} this query filters the articles dataframe by year, exploding the authors array \verb|idAuth| field (note that
+authors is an array of struct elements with 2 fields). After that, it joins the result with the authors dataframe, groups the
+articles by id and counts the number of distinct nationalities among the authors. It finally filters the results to include only
+articles with more than 13 different nationalities and orders the results in descending order, displaying the title of the article,
+the list of nationalities and their count.\newline
 \begin{python}
 df_articles_nationalities = df_articles.alias("art")\
                                 .filter(f.col("year") > 2000)\
@@ -613,6 +661,10 @@ df_articles_nationalities = df_articles.alias("art")\
 
 \subsection{Query 10 - WHERE, GROUP BY, HAVING, 2 JOINS}
 This query finds  all the authors that published on more than 2 Journals.\newline
+\textbf{Description:}  starting from the authors dataframe, we explode the articles array, creating a new field named \verb|article|.
+After that, we join the results with the articles collection and then with the venues collection. Then, we filter the results to keep
+only articles written on journals (type 1) and group by the author id. Finally, we count the number of distinct venues in each group
+(collecting in a list all the venues of the group), and keep only the groups with more than 2 venues.
 \begin{python}
 df_exploded_authors = df_authors.alias("auth")\
                         .select("auth._id","auth.name", f.explode("auth.articles").alias("article"))\
@@ -627,12 +679,17 @@ df_exploded_authors = df_authors.alias("auth")\
 \end{python}
 \begin{figure}[H]
 \centering
-\includegraphics[width=1\textwidth]{query/spark_q11.PNG}
+\includegraphics[width=1\textwidth]{query/spark_q10.PNG}
 \label{fig:query10}
 \end{figure}
 
 \subsection{Query 11 - EXTRA}
 This query returns all the articles written by authors whose names combined have all 26 letters of the alphabet.\newline
+\textbf{Description:} The query starts with exploding articles for each author. Then, the grouping combined with the collect
+retrieves, for each article, the list of its authors, then several operation are applied on this list in order to obtain the
+different letters that are present in the list of authors. After that, a filter to keep only the ones that have all the 26
+letters of the alphabet in it is applied, and the result is joined with articles to obtain the title. Finally, a projection is
+used to display the title and the list of authors in alphabetical order.\newline
 \begin{python}
 df_authors.select("name", f.explode("articles").alias("idArt")) \
           .groupBy("idArt") \
@@ -651,6 +708,9 @@ df_authors.select("name", f.explode("articles").alias("idArt")) \
 
 \subsection{Query 12 - EXTRA}
 This query returns all articles written in affiliation with \emph{Politecnico of Milano}.\newline
+\textbf{Description:} the query starts by exploding the authors array field in the article, creating the new \verb|affiliation| attribute.
+Articles that contain at least one of the desired organization (the same article could be written in collaboration with different
+universities) are kept. Then, a join with the authors collection is executed to retrieve the name of the author.
 \begin{python}
 df_articles\
     .select("title",f.explode("authors").alias("affiliation"))\
