@@ -237,7 +237,21 @@ The designed model contains also the following relationships:
 
 \chapter{Data Structure}
 \label{ch:data_struct}
-In this part of the project we used the same two JSONs used in the MONGODB implementation.
+In this part of the project we used the same two \verb|JSON|s used in the \emph{MongoDB} implementation. We only removed
+chapters inside articles and \verb|_id| authors inside articles was renamed as \verb|idAuth|. Also id and dates were reconverted
+in plain text because in \emph{MongoDB} we needed to add them as special entities: \verb|$oid| and \verb|$date|.\newline
+This was done via the following lines of script:
+\begin{itemize}
+    \item the \textbf{first line} is used for the \verb |JSON| file containing the articles. The script removes \verb|$oid|, to
+        delete chapters field and to rename authors field \emph{id} into \emph{idAuth}
+    \item the \textbf{second line} is used for the \verb |JSON| file containing the authors. The script removes \verb|$oid| and
+        \verb|$date| \\
+\end{itemize}
+\begin{lstlisting}
+cat dblp_sample_filtered.json | sed -E 's/\{"\$oid":(["a-z0-9]+)\}/\1/g' | jq 'del(.[].chapters)' | jq '.[].authors[] |= with_entries(if .key == "id" then .key = "idAuth" else . end)' > dblp_sample_filtered_spark.json
+
+cat dblp_sample_reverted_filtered.json | sed -E 's/\{"\$oid":(["a-z0-9]+)\}/\1/g' | sed -E 's/\{"\$date":(["A-Z0-9:-]+)\}/\1/g' > dblp_sample_reverted_filtered_spark.json
+\end{lstlisting}
 
 \chapter{Dataframe Structure}
 \label{ch:frame_struct}
