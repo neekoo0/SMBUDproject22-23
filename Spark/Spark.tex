@@ -467,6 +467,7 @@ df_authors.filter(f.col("_id") == "638db170ae9ea0d19fad7a79").show()
 df_authors = df_authors.filter(f.col("_id") != "638db170ae9ea0d19fad7a79")
 \end{python}
 
+\newpage
 \section{Queries}
 We have identified the following queries in order to show the system's basic functionalities.\newline
 In the following sections title we wrote the basic requirements for every query, that, for ease of read, are represented
@@ -531,7 +532,7 @@ df_authors.filter(f.col("nationality")\
 \end{python}
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.6\textwidth]{query/spark_q3.PNG}
+\includegraphics[width=0.4\textwidth]{query/spark_q3.PNG}
 \label{fig:query3}
 \end{figure}
 
@@ -555,7 +556,7 @@ df_keywords = df_italian.join(df_articles, df_italian.articles == df_articles._i
 \end{python}
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.5\textwidth]{query/spark_q4.PNG}
+\includegraphics[width=0.3\textwidth]{query/spark_q4.PNG}
 \label{fig:query4}
 \end{figure}
 
@@ -572,7 +573,7 @@ df_venues\
 \end{python}
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.3\textwidth]{query/spark_q5.PNG}
+\includegraphics[width=0.2\textwidth]{query/spark_q5.PNG}
 \label{fig:query5}
 \end{figure}
 
@@ -593,7 +594,7 @@ df_articles\
 \end{python}
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{query/spark_q6.PNG}
+\includegraphics[width=0.5\textwidth]{query/spark_q6.PNG}
 \label{fig:query6}
 \end{figure}
 
@@ -612,7 +613,7 @@ df_articles\
 \end{python}
 \begin{figure}[H]
 \centering
-\includegraphics[width=1\textwidth]{query/spark_q7.PNG}
+\includegraphics[width=0.8\textwidth]{query/spark_q7.PNG}
 \label{fig:query7}
 \end{figure}
 
@@ -644,7 +645,7 @@ df_articles_year = df_articles\
 \end{python}
 \begin{figure}[H]
 \centering
-\includegraphics[width=1\textwidth]{query/spark_q8.PNG}
+\includegraphics[width=0.8\textwidth]{query/spark_q8.PNG}
 \label{fig:query8}
 \end{figure}
 
