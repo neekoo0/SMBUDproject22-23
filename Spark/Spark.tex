@@ -222,13 +222,13 @@ The main collections analyzed in the project are \emph{Authors}, \emph{Publicati
 
 The conceptual model just showed contains 6 main entities, that are related to each other through various relationships:
 \begin{itemize}
-    \item \textbf{Publication:} represents all the scientific articles. Its attributes are: \emph{\_id, title, authors, n\_citations,
-        abstract, doi, keywords, isbn, page\_start, page\_end, year, fos, references, issue, volume, publisher, venue\_raw} and its
+    \item \textbf{Publication:} represents all the scientific articles. Its attributes are: \emph{\_id, title, n\_citations,
+        abstract, doi, keywords, isbn, page\_start, page\_end, year, fos, issue, volume, publisher} and its
         organization will be presented later
-    \item \textbf{Author:} it is the one who contributed to a publication. Its attributes are: \emph{\_id, name, nationality, articles,
+    \item \textbf{Author:} it is the one who contributed to a publication. Its attributes are: \emph{\_id, name, nationality,
         bio, email, orcid, dob (date of birth)}
     \item \textbf{Venue:} it is where a publication is published or presented. Its attributes are: \emph{raw, type,
-        artIds, city}
+        city}
     \item \textbf{FieldOfStudy:} this entity represents the subjects of the publication and its attribute is \emph{name}
 \end{itemize}
 \bigskip
