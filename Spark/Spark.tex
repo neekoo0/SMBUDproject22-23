@@ -197,6 +197,12 @@ groupnumber=10
 \label{ch:introduction}
 In this chapter will be presented the problem specification and the hypothesis under which the database is implemented.
 
+\section{Problem Specification}
+This project aims to build a database that handles scientific articles contained in the DBLP bibliography. In this project session,
+our work will be focused on \emph{Spark} technology. \\
+The focus is on creating a database which allows efficient information retrieval from the publications citation network.\\
+The main collections analyzed in the project are \emph{Authors}, \emph{Publication} and \emph{Venue}.
+
 
 \chapter{Conceptual Model}
 \label{ch:conc_model}
@@ -225,12 +231,22 @@ The conceptual model just showed contains 6 main entities, that are related to e
         artIds, city}
     \item \textbf{FieldOfStudy:} this entity represents the subjects of the publication and its attribute is \emph{name}
 \end{itemize}
+\bigskip
+Differences with \emph{MongoDB} conceptual model:
+\begin{itemize}
+    \item we add \verb|issue|, \verb|volume| and \verb|publisher| to the \emph{Publication} structure because \emph{Venue} is now an
+        independent collection
+    \item we add field \verb |city| in \emph{Venue} structure representing the location of the venue
+\end{itemize}
+\bigskip
 
 The designed model contains also the following relationships:
 \begin{itemize}
     \item \textbf{Mentions:} is the relationship between a \emph{publication} and another \emph{publication} cited by the first one
     \item \textbf{Published\_on:} is the relationship between a \emph{publication} and its \emph{venue}
     \item \textbf{Writes:} is the relationship between \emph{author} and \emph{publication} which features the affiliation property.
+        We decided to design it with \verb |org| as an attribute of the relationship, due to the fact that it belongs
+        only to a pair of \emph{author} and \emph{publication} and it represents the institute where the author worked for the publication
     \item \textbf{Regards:} is the relationship between a \emph{publication} and its \emph{fields of study}
 \end{itemize}
 
