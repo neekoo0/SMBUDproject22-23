@@ -396,7 +396,7 @@ new_author = Row(
 df_authors = df_authors.union(spark.createDataFrame([new_author], schema = schemaAuthors))
 \end{python}
 
-\subsection{Insert a new author}
+\subsection{Insert a new article}
 \label{pub_insert}
 Assuming it is not present in the dataset, we created a new row with the values for a new article written by the author created
 in section ~\ref{auth_insert}. In order to set the authors, we instantiated an array \verb |new_authors|.\newline
