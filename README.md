@@ -61,7 +61,7 @@ The final version includes:
 * [Second delivery - MongoDB](https://github.com/neekoo0/SMBUDproject22-23/blob/main/out/MongoDB.pdf)
 * [Third delivery - Spark](https://github.com/neekoo0/SMBUDproject22-23/blob/main/out/Spark.pdf)
 
-Project presentation slides: [presentation](https://github.com/neekoo0/SMBUDproject22-23/tree/main/Project%20Presentation)
+Project presentation slides: [presentation](https://github.com/neekoo0/SMBUDproject22-23/blob/main/Project%20Presentation/TemplatePoliMi.pptx)
 
 ## Tools
 * LaTeX - IntelliJ
