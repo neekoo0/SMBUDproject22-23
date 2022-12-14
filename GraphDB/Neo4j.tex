@@ -252,9 +252,8 @@ The main features analyzed are: articles, authors, venues, fields of study and t
 The ER diagram designed contains the following entities:
 \begin{itemize}
     \item \textbf{Publication:} this entity represents all the scientific articles. They are identified by their key \emph{pubId}.
-            Other important attributes are: \emph{title, nCitations, abstract, DOI, keywords, year}.
-            Publication entity is the superclass of a Total and Exclusive ISA hierarchy with the following subclasses:
-            \emph{Journal article, Conference \& Workshop paper, Informal publication, Thesis, Book}.
+            Other important attributes are: \emph{title, nCitations, abstract, DOI, keywords, year, \textcolor{red}{type}}.
+            \textcolor{red}{The type field represents the type of the publication (i.e. thesys, journal article, book, etc.)}
     \item \textbf{Author:} it is the one who contributed to a publication. Its key is \emph{authId} and its attributes are: \emph{name, orcid, nationality}.
     \item \textbf{Venue:} it is where a publication is published or presented. This is a superclass of a Partial and Exclusive
             ISA hierarchy with the two subclasses \emph{Journal} and \emph{Conference}.
