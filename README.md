@@ -16,28 +16,52 @@ The focus is on creating a database which allows efficient information retrieval
 Design, store and query graph data structures in a NoSQL DB for DBLP bibliography.
 
 Tasks to perform:
-- Design conceptual model 
-- Store a sample dataset in Neo4J
-- Write basic data creation\update Commands (minimum 5)
-- Write basic Queries (minimum 10)
-- Check complexity and performance time
+* Design conceptual model 
+* Store a sample dataset in Neo4J
+* Write basic data creation\update Commands (minimum 5)
+* Write basic Queries (minimum 10)
+* Check complexity and performance time
 
 ## Second assignment - MongoDB
 
 Design, store and query documental data structures in a NoSQL DB for DBLP bibliography.
 
 Tasks to perform:
-- Design conceptual model 
-- Store a sample dataset in MongoDB
-- Write basic data creation\update Commands (minimum 5)
-- Write basic Queries (minimum 10)
-- Check complexity and performance time
+* Design conceptual model 
+* Store a sample dataset in MongoDB
+* Write basic data creation\update Commands (minimum 5)
+* Write basic Queries (minimum 10)
+* Check complexity and performance time
+
+## Third assignment - Spark
+
+Design, store and query data structures in a NoSQL DB for DBLP bibliography using Spark.
+
+Tasks to perform:
+* Design conceptual model 
+* Store a sample dataset in Spark
+* Write basic data creation\update Commands (minimum 5)
+* Write 10 Queries with the following requirements (provided using their equivalents for simplicity):
+    * WHERE, JOIN
+    * WHERE, LIMIT, LIKE
+    * WHERE, IN, Nested Query
+    * GROUP BY, 1 JOIN, AS
+    * WHERE, GROUP BY
+    * GROUP BY, HAVING, AS
+    * WHERE, GROUP BY, HAVING, AS
+    * WHERE, Nested Query (i.e., 2-step Queries), GROUP BY
+    * WHERE, GROUP BY, HAVING, 1 JOIN
+    * WHERE, GROUP BY, HAVING, 2 JOINs
+* Check complexity and performance time
 
 ## Documents
 
 The final version includes:
 * [First delivery - Neo4j](https://github.com/neekoo0/SMBUDproject22-23/blob/main/out/Neo4j.pdf)
 * [Second delivery - MongoDB](https://github.com/neekoo0/SMBUDproject22-23/blob/main/out/MongoDB.pdf)
+* [Third delivery - Spark](https://github.com/neekoo0/SMBUDproject22-23/blob/main/out/Spark.pdf)
+
+Project presentation slides: [presentation](https://github.com/neekoo0/SMBUDproject22-23/tree/main/Project%20Presentation)
 
 ## Tools
 * LaTeX - IntelliJ
