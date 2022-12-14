@@ -206,16 +206,19 @@ objects like: \emph{chapters, biographies} and \emph{images}.
 	\caption{ER Diagram}
 	\label{fig:er}
 \end{figure}
-\newpage
+\textcolor{red}{\textbf{Note:} the primary keys of \emph{Author} and \emph{Publication} are written in bold. We decided
+not to highlight the primary keys of the other entities because they are not collections in our implementation.\newline
+In the end we have to say that, because we are aggregating \emph{Venues} on raw field, we decided to move volume,
+issue and publisher from \emph{Venue} to the relationship \emph{Published\_on}.}
 
+\bigskip
 The Entity-Relationship model contains 6 main entities, that are related to each other through various relationships:
 \begin{itemize}
 	\item \textbf{Publication:} represents all the scientific articles. Its attributes are: \emph{\_id, title, n\_citations,
 		abstract, doi, keywords, isbn, page\_start, page\_end, year} and its organization will be presented later
 	\item \textbf{Author:} it is the one who contributed to a publication. Its attributes are: \emph{\_id, name, bio,
 		email, nationality, dob (date of birth)}
-	\item \textbf{Venue:} it is where a publication is published or presented. Its attributes are: \emph{raw, type,
-		volume, issue}
+	\item \textbf{Venue:} it is where a publication is published or presented. Its attributes are: \emph{raw, type}
 	\item \textbf{FieldOfStudy:} this entity represents the subjects of the publication and its attribute is \emph{name}
 	\item \textbf{Chapter:} it represents the chapter of a scientific articles. Its attributes are \emph{title, text}
 	\item \textbf{Image:} it represents the image contained in a specific chapter of the publication. Its attributes are
@@ -224,7 +227,8 @@ The Entity-Relationship model contains 6 main entities, that are related to each
 
 The ER diagram designed contains also the following relationships:
 \begin{itemize}
-	\item \textbf{Mentions:} is the relationship between a \emph{publication} and another \emph{publication} cited by the first one
+	\item \textbf{References:} is the relationship between a \emph{publication} and another \emph{publication} cited by the first one.
+		\textcolor{red}{This relationship also contains fields issue, volume and publisher}
 	\item \textbf{Published\_on:} is the relationship between a \emph{publication} and its \emph{venue}
 	\item \textbf{Writes:} is the relationship between \emph{author} and \emph{publication} which features the affiliation property.
 		We decided to design it with \verb |affiliation| as an attribute of the relationship, due to the fact that it belongs
