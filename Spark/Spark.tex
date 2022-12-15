@@ -199,12 +199,12 @@ In this chapter will be presented the problem specification and the hypothesis u
 
 \section{Problem Specification}
 This project aims to build a database that handles scientific articles contained in the DBLP bibliography. In this implementation,
-our work will be focused on \emph{Spark} technology, which is a ditributed computing infrastructure that can process large amount of data in efficient day. To accomplish this we used the PySpark interface that allows us to interact with Apache Spark using python. 
+our work will be focused on \emph{Spark} technology, which is a distributed computing infrastructure that can process large amount of data in efficient day. To accomplish this we used the PySpark interface that allows us to interact with Apache Spark using python.
 
 \section{Assumption}
 \begin{itemize}
     \item An author can't work for more than one organization for the same Publication
-    \item As in the MongoDB implementation, a publication can be published only in one venue
+    \item As in the MongoDB implementation, a publication can be published only on one venue
     \item Venues with the same raw take place in the same city
     \item Venue is identified by raw field
 \end{itemize}
@@ -245,15 +245,14 @@ The 4 main entities just described, are related to each other through the follow
     \item \textbf{References:} is the relationship between a \emph{publication} and another \emph{publication} cited by the first one
     \item \textbf{Published\_on:} is the relationship between a \emph{publication} and its \emph{venue}. Its attributes are: \emph{ issue, volume, publisher}
     \item \textbf{Writes:} is the relationship between \emph{author} and \emph{publication} which features the affiliation property.
-        We decided to design it with \verb |org| as an attribute of the relationship, due to the fact that it belongs
-        only to a pair of \emph{author} and \emph{publication} and it represents the institute where the author worked for the publication
+        We decided to design it with \verb |org| as an attribute of the relationship, due to the assumption presented above
     \item \textbf{Regards:} is the relationship between a \emph{publication} and its \emph{fields of study}
 \end{itemize}
 
 \bigskip
 Differences with \emph{MongoDB} conceptual model:
 \begin{itemize}
-\item we add field \verb |city| in \emph{Venue} entity representing the location of the venue
+\item we added field \verb |city| in \emph{Venue} entity representing the location of the venue
 \item \emph{Chapters} and \emph{images} have been removed
 \end{itemize}
 
@@ -310,7 +309,7 @@ The structure just shown represents an \emph{Article}; its attributes are:
     \item \textbf{\_id} is the identifier of a publication.
     \item \textbf{title} represents the title of the publication.
     \item \textbf{authors} is an array that contains: \verb |idAuth| of the authors of the article and the \verb |org|
-        field which represent the affiliation.
+        field which contains their affiliations.
     \item \textbf{n\_citation} is the number of times that the publication has been mentioned.
     \item \textbf{abstract} is a string containing a brief summary of the contents of the paper.
     \item \textbf{doi} Digital Object Identifier is a persistent and standardized identifier.
@@ -327,7 +326,8 @@ The structure just shown represents an \emph{Article}; its attributes are:
     \item \textbf{venue\_raw} is the name or the abbreviation of the venue (regardless the year, issue or volume) in which the
         publication was presented.
 \end{itemize}
-We moved \verb|issue|, \verb|volume| and \verb|publisher| to the \emph{Publication} structure because in this implementation we have a new 		       collection for the \emph{Venue}. This has been done because, as in previous projects, we decided to aggregate the venues with respect to the field \verb|raw|.
+We moved \verb|issue|, \verb|volume| and \verb|publisher| to the \emph{Publication} structure because in this implementation we have a new
+collection for the \emph{Venue}. This has been done because, as in previous projects, we decided to aggregate the venues with respect to the field \verb|raw|.
 
 \section{Author Structure}
 \begin{lstlisting}
@@ -342,6 +342,7 @@ root
 |-- orcid: string (nullable = true)
 |-- dob: timestamp (nullable = true)
 \end{lstlisting}
+\newpage
 The structure just shown represents an \emph{Author}; its attributes are:
 \begin{itemize}
     \item \textbf{\_id} is the identifier of an author.
@@ -363,15 +364,15 @@ root
 |    |-- element: string (containsNull = false)
 |-- city: string (nullable = true)
 \end{lstlisting}
-The structure just shown represents a \emph{Venue}. This dataframe was obtained extracting venues fields from the Articles dataframe already imported. \emph{Venue} attribute are the following:
+The structure just shown represents a \emph{Venue}. This dataframe was obtained extracting venues fields from the Articles dataframe already imported. \emph{Venue} attributes are the following:
 \begin{itemize}
     \item \textbf{raw} is the name or the abbreviation of the venue (regardless the year, issue or volume) in which the
         publication was presented.
     \item \textbf{type} indicates the type of the publication.
     \item \textbf{artIds} is a set of articles identifier associated to the venue.
-    \item \textbf{city} represents the location of the venue an it is randomly populated.
+    \item \textbf{city} represents the location of the venue; this attribute has been randomly populated.
 \end{itemize}
-Note that \emph{artIds, city} where not present in the Article dataframe so have been generated during the creation of the venue collection. 
+Note that \emph{artIds, city} where not present in the Article dataframe so have been generated during the creation of the venue collection.
 
 \newpage
 \section{Dataframe Analysis}
@@ -391,7 +392,7 @@ We have identified the following \verb |INSERT| and \verb |UPDATE| commands to s
 
 \subsection{Insert a new author}
 \label{auth_insert}
-Assuming it is not present in the dataset, we created a row for the new author and we added into to the \emph{Author}'s dataframe.\newline
+Assuming it is not present in the dataset, we created a row for the new author and we added it into the \emph{Author}'s dataframe.\newline
 \begin{python}
 new_author = Row(
     _id="638db170ae9ea0d19fad7a79",
@@ -460,7 +461,7 @@ new_venue = Row(
 df_venues = df_venues.union(spark.createDataFrame([new_venue]))
 \end{python}
 
-\subsection{Insert a new article in his author dataframe}
+\subsection{Add a new article to its authors}
 Through this command we inserted the article created in section ~\ref{pub_insert} to its authors. In order to do that, we
 selected the authors through the ids and we add the article id to their field \verb |articles|.\newline
 \textbf{Note:} one of the author is the one created in section ~\ref{auth_insert}.\newline
