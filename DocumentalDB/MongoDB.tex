@@ -223,7 +223,7 @@ The Entity-Relationship model contains 6 main entities, that are related to each
 	\item \textbf{FieldOfStudy:} this entity represents the subjects of the publication and its attribute is \emph{name}
 	\item \textbf{Chapter:} it represents the chapter of a scientific articles. Its attributes are \emph{title, text}
 	\item \textbf{Image:} it represents the image contained in a specific chapter of the publication. Its attributes are
-		\emph{url, caption}
+		\emph{link, caption}
 \end{itemize}
 
 The ER diagram designed contains also the following relationships:
@@ -611,7 +611,7 @@ db.articles.insertOne({
 					[
 						{
 						caption:"Fig.1 Representation of the three different types of concept drift",
-						url:"https://ars.els-cdn.com/content/image/1-s2.0-S0957417422001208-gr1.jpg"
+						link:"https://ars.els-cdn.com/content/image/1-s2.0-S0957417422001208-gr1.jpg"
 						}
 					]
 				}
@@ -626,7 +626,7 @@ db.articles.insertOne({
 		images:[
 			{
 			caption:"Fig. 2. Architecture of C-SMOTE meta-strategy pipelined with an Online Learner.",
-			url: "https://ars.els-cdn.com/content/image/1-s2.0-S0957417422001208-gr5.jpg"
+			link: "https://ars.els-cdn.com/content/image/1-s2.0-S0957417422001208-gr5.jpg"
 			}
 		],
 		subsection:[
