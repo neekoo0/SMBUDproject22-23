@@ -206,6 +206,7 @@ our work will be focused on \emph{Spark} technology, which is a ditributed compu
     \item An author can't work for more than one organization for the same Publication
     \item As in the MongoDB implementation, a publication can be published only in one venue
     \item Venues with the same raw take place in the same city
+    \item Venue is identified by raw field
 \end{itemize}
 
 \chapter{Conceptual Model}
@@ -218,13 +219,15 @@ our work will be focused on \emph{Spark} technology, which is a ditributed compu
 \end{figure}
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.9\textwidth]{ERSpark.jpg}
+\includegraphics[width=0.75\textwidth]{ERSpark.png}
 \caption{Conceptual Model}
 \label{fig:er}
 \end{figure}
-\newpage
 
-The conceptual model above contains 6 main entities, that are related to each other through the following relationships:
+\textbf{Note:} in the conceptual model diagram, we highlighted the primary keys of the entities that are implemented as a collection:
+\emph{Publication}, \emph{Author} and \emph{Venue}
+
+The conceptual model above contains 4 main entities:
 \begin{itemize}
     \item \textbf{Publication:} represents all the scientific articles. Its attributes are: \emph{\_id, title, n\_citations,
         abstract, doi, keywords, isbn, page\_start, page\_end, year, fos} and its
@@ -235,15 +238,9 @@ The conceptual model above contains 6 main entities, that are related to each ot
         city}
     \item \textbf{FieldOfStudy:} this entity represents the subjects of the publication and its attribute is \emph{name}
 \end{itemize}
-\bigskip
-Differences with \emph{MongoDB} conceptual model:
-\begin{itemize}
-    \item we add field \verb |city| in \emph{Venue} entity representing the location of the venue 
-    \item \emph{Chapters} and \emph{images} have been removed
-\end{itemize}
-\bigskip
 
-The designed model contains also the following relationships:
+\bigskip
+The 4 main entities just described, are related to each other through the following relationships:
 \begin{itemize}
     \item \textbf{References:} is the relationship between a \emph{publication} and another \emph{publication} cited by the first one
     \item \textbf{Published\_on:} is the relationship between a \emph{publication} and its \emph{venue}. Its attributes are: \emph{ issue, volume, publisher}
@@ -251,6 +248,13 @@ The designed model contains also the following relationships:
         We decided to design it with \verb |org| as an attribute of the relationship, due to the fact that it belongs
         only to a pair of \emph{author} and \emph{publication} and it represents the institute where the author worked for the publication
     \item \textbf{Regards:} is the relationship between a \emph{publication} and its \emph{fields of study}
+\end{itemize}
+
+\bigskip
+Differences with \emph{MongoDB} conceptual model:
+\begin{itemize}
+\item we add field \verb |city| in \emph{Venue} entity representing the location of the venue
+\item \emph{Chapters} and \emph{images} have been removed
 \end{itemize}
 
 
@@ -767,6 +771,18 @@ df_articles\
 \includegraphics[width=1\textwidth]{query/spark_q12.PNG}
 \label{fig:query12}
 \end{figure}
+
+
+\chapter{Conclusions}
+\label{ch:conclusions}
+Spark is a computing platform designed to efficiently scale data processing and analysis.
+Indeed, given its distributed framework and the use of RDDs, it allows splitting the workload across multiple nodes.
+Furthermore, Spark offers a rich set of APIs and libraries, making it a versatile tool for working with big data.
+In our implementation, we used the PySpark interface, which makes the interaction with Apache very intuitive.
+The flexibility offered by the RDDs made it possible to shape the data structure to match our needs.
+
+In the end, the technologies used in the project, allowed us to face, from different perspectives, the challenges of
+designing efficient database solutions for large sets of data.
 
 
 \end{document}

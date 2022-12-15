@@ -189,6 +189,7 @@ objects like: \emph{chapters, biographies} and \emph{images}.
 \item There is no distinction between different types of Publication
 \item An author can't work for more than one organization for the same Publication
 \item A chapter can contain subsections and these will be considered chapters as well
+\item \textcolor{red}{Venue is identified by raw field}
 \end{enumerate}
 
 \chapter{ER Diagram}
@@ -527,6 +528,8 @@ Publication represent the central concept of the system and contains:
 				\end{itemize}
 \item \textbf{references} set of ObjectIds of the referenced articles.
 \end{itemize}
+
+\textcolor{red}{Given that venue is a subdocument inside the article, the attributes of the relationship \emph{Published\_on} can be moved inside the subdocument.}
 \bigskip
 
 \subsection{Author}

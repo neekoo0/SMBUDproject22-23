@@ -225,12 +225,14 @@ The main features analyzed are: articles, authors, venues, fields of study and t
 \begin{enumerate}
     \item Data in the sources are heterogeneous and can be inconsistent
     \item It is possible that an author writes for different organizations
+    \item \textcolor{red}{An author can't work for more than one organization for the same Publication}
     \item Field \emph{\_id} in \textbf{author} exists and it is unique
     \item Field \emph{\_id} in \textbf{article} exists and it is unique
     \item It is possible to find a self-reference in a publication
     \item Venues with \emph{type=0} are Conference
     \item Venues with \emph{type=1} are Journal
     \item There is no constraint between the publication type and the venue type in which it is published
+    \item \textcolor{red}{Venue with \emph{type} field missing or different from values 0 or 1, are \emph{Generic Venue}}
 \end{enumerate}
 
 \chapter{ER Diagram}
@@ -441,7 +443,7 @@ In this chapter we will present the import commands that generates 39550 nodes d
     \item 17025 \emph{Author} nodes
     \item 2133 \emph{Conference} nodes
     \item 256 \emph{Journal} nodes
-    \item 506 \emph{Generic Value} nodes
+    \item 506 \emph{Generic Venue} nodes
     \item 13210 \emph{Field of Study} nodes
 \end{itemize}
 In order to complete these operations we used the plug-in apoc.
