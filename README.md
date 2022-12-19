@@ -1,4 +1,4 @@
-![latex]({https://img.shields.io/badge/LaTeX-47A141?style=for-the-badge&logo=LaTeX&logoColor=white})
+![LaTeX](https://img.shields.io/badge/latex-%23008080.svg?style=for-the-badge&logo=latex&logoColor=white)
 
 # Systems and Methods for Big and Unstructured Data project
 
@@ -13,7 +13,7 @@ This project aims to build databases with different technologies that handle sci
 The focus is on creating a database which allows efficient information retrieval of the articles.
 
 ## First assignment - Neo4J
-![neo4j]({https://img.shields.io/badge/Neo4j-018bff?style=for-the-badge&logo=neo4j&logoColor=white})
+![Neo4J](https://img.shields.io/badge/Neo4j-008CC1?style=for-the-badge&logo=neo4j&logoColor=white) 
 
 Design, store and query graph data structures in a NoSQL DB for DBLP bibliography.
 
@@ -25,7 +25,7 @@ Tasks to perform:
 * Check complexity and performance time
 
 ## Second assignment - MongoDB
-![mongo]({https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white})
+![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)
 
 Design, store and query documental data structures in a NoSQL DB for DBLP bibliography.
 
@@ -37,7 +37,7 @@ Tasks to perform:
 * Check complexity and performance time
 
 ## Third assignment - Spark
-![spark]({https://img.shields.io/badge/Apache_Spark-FFFFFF?style=for-the-badge&logo=apachespark&logoColor=#E35A16})
+![Apache Spark](https://img.shields.io/badge/Apache_Spark-FFFFFF?style=for-the-badge&logo=apachespark&logoColor=#E35A16)
 
 Design, store and query data structures in a NoSQL DB for DBLP bibliography using Spark.
 
